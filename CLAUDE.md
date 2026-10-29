@@ -31,6 +31,7 @@
 
 - 프롬프트를 바꿔 결과가 달라짐 / 스킬·CLAUDE.md 규칙을 씀 / 내가 AI 실수를 지적해 고침 → `records/AI_USAGE_LOG.md`
 - 화면 대안 비교, 디자인 결정 → `records/DESIGN_DECISION_LOG.md` (이유·포기한 것은 "(초안)" 표시, 사용자가 확인)
+- AI와 의견이 달랐다가 대화로 좁혀 결정이 바뀜 → 세 곳에 나눠 남긴다: `records/AI_USAGE_LOG.md` 3번(AI가 깔았던 전제와 고친 과정) · `records/DESIGN_DECISION_LOG.md` 1번(선택지 비교표 + 논의 흐름) · `records/RETROSPECTIVE_NOTES.md`(배운 것). 근거로 `PROMPT_HISTORY.md` 위치를 적는다
 - 사용자가 테스트 결과를 말해 줌 → `records/USABILITY_TEST_LOG.csv` (말해 준 것만, 수치를 지어내지 않음)
 - 아쉬운 점·포기한 것·배운 것 → `records/RETROSPECTIVE_NOTES.md`
 - 실행·설치 명령어 → `README.md` 실행 방법
