@@ -24,7 +24,7 @@
 테스트 웹은 저장소에 포함하지 않고, 별도 배포 주소로 공유한다.
 
 - 배포 주소: https://261029.netlify.app/ (Netlify)
-- 베타 (조원용): `https://261029.netlify.app/?phase=beta` — 10/29 종료. 수정본 배포 후에는 열면 종료 안내만 보인다
+- 베타 (수강생용): `https://261029.netlify.app/?phase=beta` — 10/29 종료. 수정본 배포 후에는 열면 종료 안내만 보인다
 - 본 테스트 (11/1): `https://261029.netlify.app/`
 - 진행자 확인용 (집계 제외): `https://261029.netlify.app/?phase=test&group=A` 또는 `group=B`
 - A/B는 링크를 연 순서대로 번갈아 배정되고, 한 사람당 한 번만 참여할 수 있다
