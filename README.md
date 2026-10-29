@@ -37,6 +37,20 @@
      ```
   2. app.netlify.com → 사이트 `261029` → **Deploys** 탭 아래 영역에 `deploy/` 폴더를 끌어다 놓는다 (netlify.com/drop에 올리면 주소가 다른 새 사이트가 생기므로 주의)
 
+### 테스트 결과 분석 (pandas)
+
+- 필요한 것: Python 3, pandas
+  ```bash
+  pip install pandas
+  ```
+- 베타 테스트(10/29, A vs B v1) 분석
+  ```bash
+  python analysis/analyze_beta.py
+  ```
+  - 입력: `records/beta_20261029_participants.csv`, `records/beta_20261029_tasks.csv` (Google 시트 `participants`·`tasks` 탭을 CSV로 내려받은 원본)
+  - 원본 CSV는 참가자 기록이라 저장소에 포함하지 않는다. 파일이 없으면 "[에러] 파일이 없습니다"를 보여 주고 멈춘다
+  - 출력: 화면에 표로 표시 (A vs B 정답률·시간, 과업별 차이, 오답 보기, 사후 설문, 해설 본 시간)
+
 ## 사용한 데이터
 
 - 출처: [공개 데이터 링크 또는 직접 만든 샘플]
