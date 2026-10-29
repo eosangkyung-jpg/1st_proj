@@ -14,7 +14,10 @@ records/
 1st_project_guide.md
 파이썬용어복습.md
 
-# 4) 운영체제·편집기·Python이 자동으로 만드는 파일
+# 4) 사용성 테스트 웹 (베타·본 테스트용, 저장소에 올리지 않음)
+test-web/
+
+# 5) 운영체제·편집기·Python이 자동으로 만드는 파일
 .DS_Store
 Thumbs.db
 __pycache__/
