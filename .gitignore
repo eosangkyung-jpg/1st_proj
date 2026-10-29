@@ -1,0 +1,21 @@
+# GitHub에 올리지 않을 파일 목록 (.gitignore)
+# 여기 적힌 파일·폴더는 git add를 해도 저장소에 들어가지 않습니다.
+
+# 1) 비밀 정보
+.env
+.streamlit/secrets.toml
+
+# 2) 기록 원본 (검수 전)
+#    검수를 마친 정리본만 docs/records/ 에 복사해서 올립니다.
+records/
+
+# 3) 개인 작업 문서
+1차프로젝트_디자인_작업계획.md
+1st_project_guide.md
+
+# 4) 운영체제·편집기·Python이 자동으로 만드는 파일
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc
+.vscode/
