@@ -28,6 +28,14 @@
 - 본 테스트 (11/1): `https://261029.netlify.app/`
 - 진행자 확인용 (집계 제외): `https://261029.netlify.app/?phase=test&group=A` 또는 `group=B`
 - A/B는 링크를 연 순서대로 번갈아 배정되고, 한 사람당 한 번만 참여할 수 있다
+- 재배포 (Netlify Drop):
+  1. `test-web/`에서 사이트 파일만 `deploy/`로 복사한다 (설계 문서·Apps Script는 공개되지 않게 뺀다)
+     ```bash
+     rm -rf deploy && mkdir -p deploy/css deploy/js deploy/assets
+     cp test-web/index.html deploy/ && cp test-web/css/style.css deploy/css/
+     cp test-web/js/*.js deploy/js/ && cp test-web/assets/arnolfini.jpg deploy/assets/
+     ```
+  2. app.netlify.com → 사이트 `261029` → **Deploys** 탭 아래 영역에 `deploy/` 폴더를 끌어다 놓는다 (netlify.com/drop에 올리면 주소가 다른 새 사이트가 생기므로 주의)
 
 ## 사용한 데이터
 
