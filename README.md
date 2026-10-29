@@ -28,6 +28,12 @@
 - 본 테스트 (11/1): `https://261029.netlify.app/`
 - 진행자 확인용 (집계 제외): `https://261029.netlify.app/?phase=test&group=A` 또는 `group=B`
 - A/B는 링크를 연 순서대로 번갈아 배정되고, 한 사람당 한 번만 참여할 수 있다
+- 주의: 주소 뒤에 아무것도 붙이지 않고 열면 **본 테스트 링크**로 동작한다 (시트의 배정 순번이 넘어가고, 시작하면 `phase=main` 기록이 남는다). 화면 확인은 아래 미리보기로 한다
+- 해설 화면 미리보기 (시작 안내·사전 질문·퀴즈 없이 해설만 반복, 시트로 아무것도 보내지 않음): `?preview=B` 또는 `?preview=A` — 로컬 v2에만 있음 (배포 사이트 v1에는 없음)
+  ```bash
+  cd test-web && python -m http.server 8000
+  # 브라우저: http://localhost:8000/?preview=B
+  ```
 - 재배포 (Netlify Drop):
   1. `test-web/`에서 사이트 파일만 `deploy/`로 복사한다 (설계 문서·Apps Script는 공개되지 않게 뺀다)
      ```bash
