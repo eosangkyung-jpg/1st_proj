@@ -1,4 +1,4 @@
-# [서비스 이름]
+# DIVE (다이브) — Dive Inside, Visually Explained
 
 > [한 문장 문제 정의: 누가, 어떤 상황에서, 왜 불편한가]
 
