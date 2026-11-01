@@ -31,9 +31,11 @@
 - 주의: 주소 뒤에 아무것도 붙이지 않고 열면 **본 테스트 링크**로 동작한다 (시트의 배정 순번이 넘어가고, 시작하면 `phase=main` 기록이 남는다). 화면 확인은 아래 미리보기로 한다
 - 해설 화면 미리보기 (시작 안내·사전 질문·퀴즈 없이 해설만 반복, 시트로 아무것도 보내지 않음): `?preview=B` 또는 `?preview=A` — 로컬 v2에만 있음 (배포 사이트 v1에는 없음)
   ```bash
-  cd test-web && python -m http.server 8000
+  cd test-web && python serve_nocache.py . 8000
   # 브라우저: http://localhost:8000/?preview=B
   ```
+  - `python -m http.server`로 켜도 되지만, 브라우저가 옛 `style.css`를 저장해 두고 써서 고친 값이 안 보일 수 있다(11/2 실제로 겪음). `serve_nocache.py`는 "저장하지 마" 신호를 보내 새로고침만 하면 바로 반영된다
+- 디자인 조정 패널 (작업용, 배포하지 않음): `http://localhost:8000/tuner.html` — 실제 시연 화면 옆에서 슬라이더로 디자인 값(디폴트 화면 그라데이션·제목 위치·이동 시간, 강조 어둡기 등)과 디폴트 화면 중심점을 바꿔 보고, [바뀐 값 복사]로 고칠 내용을 정리한다. 실제 파일은 바뀌지 않는다
 - 작품 고르기: 주소에 `art=작품 키`를 붙인다 (예: `?preview=B&art=arnolfini`). 없으면 `js/config.js`의 `DEFAULT_ART` 작품이 열린다. 작품별 내용은 `test-web/js/artworks/`에 있다
 - 재배포 (Netlify Drop):
   1. `test-web/`에서 사이트 파일만 `deploy/`로 복사한다 (설계 문서·Apps Script는 공개되지 않게 뺀다)
