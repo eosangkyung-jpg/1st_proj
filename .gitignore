@@ -21,6 +21,9 @@ test-web_v*_*.zip
 backups/
 deploy/
 
+# 참고 이미지·작업 자료 (AI 생성 이미지, 푸터 시안 ref_image/footer_loop/ 포함 — 저장소에 올리지 않음, 11/2)
+ref_image/
+
 # 5) 운영체제·편집기·Python이 자동으로 만드는 파일
 .DS_Store
 Thumbs.db
