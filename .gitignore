@@ -18,6 +18,7 @@ records/
 test-web/
 test-web_beta_*.zip
 test-web_v*_*.zip
+backups/
 deploy/
 
 # 5) 운영체제·편집기·Python이 자동으로 만드는 파일
