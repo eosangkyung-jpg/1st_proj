@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DIVE 시연 화면 보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root {
+  --bg: #E9E7E2; --paper: #FFFFFF; --ink: #1B1B1F; --ink-2: #5A5A63; --line: #C9C6BF;
+  --a-image: #3B82F6; --a-caption: #0EA5A4; --a-nav: #F59E0B; --a-spot: #E11D8F; --a-map: #8B5CF6; --a-cover: #16A34A; --a-dim: #DC2626;
+  --wf-bg: #F4F4F2; --wf-box: #D6D4CF; --wf-ink: #44444C;
+  --fs-s: 12px; --fs-m: 14px; --fs-l: 18px; --fs-xl: 24px;
+  --r: 8px; --gap: 24px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: Pretendard, system-ui, sans-serif; font-size: var(--fs-m); line-height: 1.5; }
+header { position: sticky; top: 0; z-index: 10; background: var(--paper); border-bottom: 1px solid var(--line); padding: 12px 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+header h1 { font-size: var(--fs-l); margin: 0 8px 0 0; letter-spacing: -0.02em; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; font: inherit; cursor: pointer; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+label.chk { display: inline-flex; gap: 6px; align-items: center; color: var(--ink-2); cursor: pointer; }
+main { padding: 24px; }
+section { margin-bottom: 40px; }
+h2 { font-size: var(--fs-xl); letter-spacing: -0.02em; margin: 0 0 4px; }
+.lead { color: var(--ink-2); margin: 0 0 16px; }
+/* 흐름도 */
+.flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; }
+.flow a { text-decoration: none; color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; background: var(--wf-bg); white-space: nowrap; }
+.flow a:hover { border-color: var(--ink); }
+.flow .arr { color: var(--ink-2); }
+.flow .end { border-style: dashed; color: var(--ink-2); }
+/* 장면 줄 */
+.row { display: flex; gap: var(--gap); overflow-x: auto; padding: 8px 4px 16px; scroll-snap-type: x proximity; }
+.card { flex: 0 0 auto; width: calc(402px + 20px); scroll-snap-align: start; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+.card h3 { font-size: var(--fs-m); margin: 0 0 8px; display: flex; justify-content: space-between; gap: 8px; }
+.card h3 span { color: var(--ink-2); font-weight: 400; }
+.phone { position: relative; width: 402px; height: 874px; overflow: hidden; border-radius: 6px; background: #030303; }
+.phone img.shot { width: 402px; height: 874px; display: block; }
+.ann { position: absolute; inset: 0; pointer-events: none; }
+.box { position: absolute; border: 1.5px solid var(--c); }
+.box.ell { border-radius: 50%; border-style: dashed; }
+.tag { position: absolute; background: var(--c); color: #fff; font-size: 11px; line-height: 1.3; padding: 1px 5px; border-radius: 3px; white-space: nowrap; max-width: 340px; overflow: hidden; text-overflow: ellipsis; }
+.dim { position: absolute; border-color: var(--a-dim); }
+.dim.v { border-left: 1px dashed var(--a-dim); }
+.dim.h { border-top: 1px dashed var(--a-dim); }
+.dim b { position: absolute; font-size: 11px; color: #fff; background: var(--a-dim); padding: 0 4px; border-radius: 3px; font-weight: 600; white-space: nowrap; }
+body:not(.show-ann) .ann { display: none; }
+body:not(.show-dim) .dim { display: none; }
+/* 와이어프레임 모드 */
+body.wf .phone { background: var(--wf-bg); }
+/* (11/2) 아이폰 화면 요소 (애플 디자인 템플릿 기준, 402×874pt): 상태 표시줄 62pt · 다이내믹 아일랜드 · 홈 인디케이터 34pt */
+.ios { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+body:not(.show-ios) .ios { display: none; }
+.ios .zone-t { position: absolute; left: 0; right: 0; top: 0; height: 62px; border-bottom: 1px dashed rgba(255,90,90,.9); }
+.ios .zone-b { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; border-top: 1px dashed rgba(90,160,255,.9); }
+.ios .island { position: absolute; top: 14px; left: 50%; width: 95px; height: 36px; margin-left: -47.5px; background: #000; border-radius: 18px; box-shadow: 0 0 0 1px rgba(255,255,255,.25); }
+.ios .time { position: absolute; top: 22px; left: 15.4%; color: #fff; font: 600 16px/20px -apple-system, 'Pretendard', sans-serif; }
+.ios .icons { position: absolute; top: 25px; right: 9.5%; display: flex; gap: 5px; align-items: center; }
+.ios .icons i { display: block; background: #fff; border-radius: 2px; }
+.ios .icons i:nth-child(1) { width: 17px; height: 11px; } .ios .icons i:nth-child(2) { width: 15px; height: 11px; border-radius: 50% 50% 2px 2px; } .ios .icons i:nth-child(3) { width: 25px; height: 12px; border-radius: 4px; }
+.ios .home { position: absolute; bottom: 8px; left: 50%; width: 134px; height: 5px; margin-left: -67px; background: #fff; border-radius: 3px; }
+body.wf .ios .time { color: var(--wf-ink); } body.wf .ios .icons i, body.wf .ios .home { background: var(--wf-ink); }
+.ios .zone-t b, .ios .zone-b b { position: absolute; right: 4px; font-size: 10px; color: #fff; background: rgba(0,0,0,.55); padding: 0 4px; border-radius: 3px; font-weight: 600; }
+.ios .zone-t b { bottom: 2px; } .ios .zone-b b { top: 2px; }
+body:not(.show-dim) .ios b { display: none; }
+body.wf img.shot { display: none; }
+body.wf .wf-layer { display: block; }
+.wf-layer { display: none; position: absolute; inset: 0; }
+.wf-img { position: absolute; background: repeating-linear-gradient(45deg, var(--wf-box) 0 6px, #E2E0DB 6px 12px); border: 1px solid #A9A69F; }
+.wf-el { position: absolute; border: 1.5px solid var(--wf-ink); border-radius: 4px; background: rgba(255,255,255,.85); color: var(--wf-ink); font-size: 11px; padding: 2px 4px; overflow: hidden; }
+.wf-el.btn-fill { background: var(--wf-ink); color: #fff; border-radius: 10px; display: grid; place-items: center; }
+.wf-el.text { border-style: dotted; }
+.wf-ell { position: absolute; border: 2px dashed var(--a-spot); border-radius: 50%; }
+.wf-dimout { position: absolute; inset: 0; background: rgba(0,0,0,.08); }
+/* 장면 설명 */
+.meta { margin-top: 8px; font-size: var(--fs-s); color: var(--ink-2); }
+.meta p { margin: 0 0 6px; color: var(--ink); font-size: var(--fs-m); }
+.meta dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; margin: 0; }
+.meta dt { color: var(--ink-2); }
+.meta dd { margin: 0; color: var(--ink); }
+.flag { display: inline-block; margin-top: 6px; background: #FEF3C7; color: #92400E; border-radius: 4px; padding: 2px 6px; }
+/* 디자인 값 표 */
+.spec { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.spec .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.spec h4 { margin: 0 0 8px; font-size: var(--fs-m); }
+.spec table { width: 100%; border-collapse: collapse; font-size: var(--fs-s); }
+.spec td { padding: 4px 0; border-top: 1px solid #EEE; vertical-align: top; }
+.spec td:first-child { color: var(--ink-2); width: 42%; padding-right: 8px; }
+.sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; border: 1px solid #999; vertical-align: -2px; margin-right: 4px; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: var(--fs-s); color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--c); margin-right: 4px; vertical-align: -1px; }
+@media (max-width: 480px) { main { padding: 12px; } header { padding: 10px 12px; } }
+</style>
+</head>
+<body class="show-ann show-dim">
+<header>
+  <h1>DIVE 시연 화면 보드 · 402×874</h1>
+  <div class="seg" id="mode">
+    <button aria-pressed="true" data-mode="shot">실제 화면</button>
+    <button aria-pressed="false" data-mode="wf">와이어프레임</button>
+  </div>
+  <div class="seg" id="art"></div>
+  <label class="chk"><input type="checkbox" id="t-ann" checked> 요소 이름표</label>
+  <label class="chk"><input type="checkbox" id="t-dim" checked> 치수</label>
+  <label class="chk"><input type="checkbox" id="t-ios"> 아이폰 화면 요소</label>
+  <div class="legend">
+    <span style="--c:var(--a-image)"><i></i>그림</span>
+    <span style="--c:var(--a-spot)"><i></i>강조(주변 어둡게)</span>
+    <span style="--c:var(--a-caption)"><i></i>자막</span>
+    <span style="--c:var(--a-nav)"><i></i>쪽수·버튼</span>
+    <span style="--c:var(--a-map)"><i></i>위치 지도</span>
+    <span style="--c:var(--a-cover)"><i></i>작품 정보</span>
+    <span style="--c:var(--a-dim)"><i></i>치수</span>
+  </div>
+</header>
+<main>
+  <section>
+    <h2>흐름</h2>
+    <p class="lead" id="flow-lead"></p>
+    <div class="flow" id="flow"></div>
+  </section>
+  <section>
+    <h2 id="scenes-title">장면</h2>
+    <p class="lead">402×874 화면, 확대·이동이 끝난 뒤 캡처. 옆으로 넘겨 보세요.</p>
+    <div class="row" id="scenes"></div>
+  </section>
+  <section>
+    <h2>로딩 · 에러 상태</h2>
+    <p class="lead">B 해설 화면에서 볼 수 있는 상태 화면</p>
+    <div class="row" id="states"></div>
+  </section>
+  <section>
+    <h2>지금 적용된 디자인 값</h2>
+    <p class="lead" id="spec-lead"></p>
+    <div class="spec" id="spec"></div>
+  </section>
+</main>
+<script>
+const DATA = {"viewport": [402, 874], "arts": {"goldsmith": [{"image": {"x": -46, "y": 0, "w": 754, "h": 874}, "minimap": null, "coverInfo": {"x": 40, "y": 553, "w": 322, "h": 74}, "coverTitle": {"x": 40, "y": 553, "w": 322, "h": 40}, "caption": null, "captionText": "", "count": {"x": 126, "y": 748, "w": 150, "h": 22}, "countText": "그림 속으로 들어가 볼까요?", "prev": null, "next": {"x": 61, "y": 782, "w": 280, "h": 48}, "nextText": "들어가기", "overlay": {"x": 40, "y": 553, "w": 322, "h": 277}, "spots": [], "spotDim": null, "rim": false, "scale": 0.3924562136332194, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(6, 22, 59)", "background-color": "rgb(255, 239, 209)", "height": "48px", "border-radius": "12px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "auto"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_00.webp"}, {"image": {"x": 59, "y": 173, "w": 283, "h": 329}, "minimap": null, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 661, "w": 322, "h": 77}, "captionText": "페트루스 크리스투스가 1449년에 그린 〈작업실의 금세공인〉이에요. 화려하게 차려입은 커플이 결혼반지를 고르고 있어요.", "count": {"x": 40, "y": 777, "w": 26, "h": 22}, "countText": "1 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 661, "w": 322, "h": 149}, "spots": [], "spotDim": null, "rim": false, "scale": 0.14765596389770508, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_01.webp"}, {"image": {"x": -332, "y": -463, "w": 919, "h": 1065}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 687, "w": 322, "h": 51}, "captionText": "앉아 있는 금세공인은 저울로 결혼반지의 무게를 달고 있어요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "2 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 687, "w": 322, "h": 123}, "spots": [{"x": 106, "y": 182, "w": 179, "h": 303}], "spotDim": "0.6", "rim": false, "scale": 0.4784106254577637, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_02.webp"}, {"image": {"x": -134, "y": -62, "w": 573, "h": 665}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 661, "w": 322, "h": 77}, "captionText": "이 금세공인은 한때 금세공인들과 관련된 성인, 성 엘리기우스로 여겨졌어요. 하지만 실제 당시의 이름난 금세공인일 가능성이 더 커요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "3 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 661, "w": 322, "h": 149}, "spots": [{"x": 51, "y": 151, "w": 302, "h": 320}], "spotDim": "0.6", "rim": false, "scale": 0.2986052831013997, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_03.webp"}, {"image": {"x": -602, "y": -118, "w": 974, "h": 1129}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 661, "w": 322, "h": 77}, "captionText": "오른쪽 선반의 물건들은 금세공 길드를 알리는 광고 역할을 해요. 진주·산호 같은 재료와 브로치·반지 같은 완성품이 놓여 있어요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "4 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 661, "w": 322, "h": 149}, "spots": [{"x": 46, "y": 129, "w": 300, "h": 412}], "spotDim": "0.6", "rim": false, "scale": 0.5070334434509277, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_04.webp"}, {"image": {"x": -1236, "y": -375, "w": 1608, "h": 1865}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 687, "w": 322, "h": 51}, "captionText": "아래 칸의 수정 용기는 성찬식에 쓰는 빵을 담아 두던 그릇이었을 것으로 보여요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "5 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 687, "w": 322, "h": 123}, "spots": [{"x": 139, "y": 136, "w": 168, "h": 475}], "spotDim": "0.6", "rim": false, "scale": 0.8375, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_05.webp"}, {"image": {"x": -652, "y": 173, "w": 1035, "h": 1201}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 661, "w": 322, "h": 77}, "captionText": "위 칸의 주전자는 시의원들이 귀한 손님에게 주던 선물이에요. 진열품들은 금세공인이 종교 공동체와 도시 사회 모두를 위해 일했음을 보여 줘요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "6 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 661, "w": 322, "h": 149}, "spots": [{"x": 131, "y": 158, "w": 249, "h": 338}], "spotDim": "0.6", "rim": false, "scale": 0.539299201965332, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_06.webp"}, {"image": {"x": -1056, "y": -839, "w": 1416, "h": 1642}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 661, "w": 322, "h": 77}, "captionText": "오른쪽 아래의 둥근 볼록거울에는 가게 밖 길과 두 젊은 남자가 비쳐요. 이 거울은 그림 속 공간을 가게 밖까지 넓혀 보여 줘요.", "count": {"x": 40, "y": 777, "w": 28, "h": 22}, "countText": "7 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 661, "w": 322, "h": 149}, "spots": [{"x": 109, "y": 76, "w": 240, "h": 509}], "spotDim": "0.6", "rim": false, "scale": 0.7373865127563477, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_07.webp"}, {"image": {"x": -1926, "y": -1706, "w": 2312, "h": 2681}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 661, "w": 322, "h": 77}, "captionText": "거울 속 남자가 든 매는 교만과 탐욕의 상징이에요. 거울 밖의 불완전한 세상을 그림 속 덕과 균형의 세상과 비교하게 해요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "8 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 661, "w": 322, "h": 149}, "spots": [{"x": 149, "y": 258, "w": 105, "h": 136}], "spotDim": "0.7", "rim": false, "scale": 1.20390625, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_08.webp"}, {"image": {"x": -179, "y": -262, "w": 730, "h": 847}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 687, "w": 322, "h": 51}, "captionText": "그림 속에는 화가의 서명과 1449라는 날짜가 적혀 있어요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "9 / 9", "prev": {"x": 257, "y": 766, "w": 44, "h": 44}, "next": {"x": 301, "y": 766, "w": 61, "h": 44}, "nextText": "해설 끝", "overlay": {"x": 40, "y": 687, "w": 322, "h": 123}, "spots": [{"x": 27, "y": 521, "w": 341, "h": 51}], "spotDim": "0.6", "rim": false, "scale": 0.3802751223246256, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "goldsmith_09.webp"}], "arnolfini": [{"image": {"x": -28, "y": 0, "w": 639, "h": 874}, "minimap": null, "coverInfo": {"x": 40, "y": 553, "w": 322, "h": 74}, "coverTitle": {"x": 40, "y": 553, "w": 322, "h": 40}, "caption": null, "captionText": "", "count": {"x": 126, "y": 748, "w": 150, "h": 22}, "countText": "그림 속으로 들어가 볼까요?", "prev": null, "next": {"x": 61, "y": 782, "w": 280, "h": 48}, "nextText": "들어가기", "overlay": {"x": 40, "y": 553, "w": 322, "h": 277}, "spots": [], "spotDim": null, "rim": false, "scale": 0.3326988855997721, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(6, 22, 59)", "background-color": "rgb(255, 239, 209)", "height": "48px", "border-radius": "12px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "auto"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_00.webp"}, {"image": {"x": 74, "y": 150, "w": 252, "h": 345}, "minimap": null, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 687, "w": 322, "h": 51}, "captionText": "얀 반 에이크가 1434년에 그린 〈아르놀피니\n부부의 초상〉이에요. 방 안에 한 부부가 서 있어요.", "count": {"x": 40, "y": 777, "w": 26, "h": 22}, "countText": "1 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 687, "w": 322, "h": 123}, "spots": [], "spotDim": null, "rim": false, "scale": 0.13127113978068033, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_01.webp"}, {"image": {"x": 40, "y": -752, "w": 1608, "h": 2200}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 661, "w": 322, "h": 77}, "captionText": "창가와 그 아래 상자 위에 오렌지가 놓여 있어요.\n당시 오렌지는 매우 비싼 과일이어서,\n이 집이 부유하다는 것을 보여줘요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "2 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 661, "w": 322, "h": 149}, "spots": [{"x": 173, "y": 181, "w": 80, "h": 93}, {"x": 126, "y": 352, "w": 125, "h": 124}], "spotDim": "0.6", "rim": false, "scale": 0.8375, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_02.webp"}, {"image": {"x": 30, "y": -1594, "w": 1553, "h": 2125}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 687, "w": 322, "h": 51}, "captionText": "바닥에는 남자가 벗어 둔 나무 덧신이\n진흙이 묻은 채 놓여 있어요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "3 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 687, "w": 322, "h": 123}, "spots": [{"x": -21, "y": 150, "w": 351, "h": 421}], "spotDim": "0.6", "rim": false, "scale": 0.808948834737142, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_03.webp"}, {"image": {"x": -380, "y": 184, "w": 1139, "h": 1558}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 687, "w": 322, "h": 51}, "captionText": "천장의 샹들리에를 보면, 촛불 하나만 켜져 있고\n하나는 꺼져 있어요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "4 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 687, "w": 322, "h": 123}, "spots": [{"x": 29, "y": 205, "w": 150, "h": 174}], "spotDim": "0.7", "rim": true, "scale": 0.5932291666666667, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_04.webp"}, {"image": {"x": -611, "y": -313, "w": 1608, "h": 2200}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 636, "w": 322, "h": 102}, "captionText": "뒷벽의 둥근 볼록거울에는\n방과 문으로 들어오는 두 남자가 비쳐요.\n이 두 사람은 화가 본인과 하인, 방문객 혹은\n그림을 보는 관람객일 수 있다는 해석이 있어요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "5 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 636, "w": 322, "h": 174}, "spots": [{"x": 54, "y": 182, "w": 312, "h": 330}], "spotDim": "0.6", "rim": false, "scale": 0.8375, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_05.webp"}, {"image": {"x": -511, "y": -85, "w": 1424, "h": 1948}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 636, "w": 322, "h": 102}, "captionText": "거울 위 벽에는 \"Johannes de Eyck\nfuit hic. 1434\"라고 쓰여 있어요.\n\"얀 반 에이크가 여기 있었다. 1434\"라는\n뜻이에요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "6 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 636, "w": 322, "h": 174}, "spots": [{"x": 46, "y": 264, "w": 278, "h": 140}], "spotDim": "0.6", "rim": false, "scale": 0.7415364583333334, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_06.webp"}, {"image": {"x": -290, "y": -948, "w": 1068, "h": 1461}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 712, "w": 322, "h": 26}, "captionText": "부부 앞의 강아지는 결혼의 충실함을 상징해요.", "count": {"x": 40, "y": 777, "w": 28, "h": 22}, "countText": "7 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 712, "w": 322, "h": 98}, "spots": [{"x": 46, "y": 181, "w": 332, "h": 372}], "spotDim": "0.6", "rim": false, "scale": 0.55615234375, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_07.webp"}, {"image": {"x": -397, "y": -210, "w": 854, "h": 1169}, "minimap": {"x": 40, "y": 82, "w": 72, "h": 99}, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 687, "w": 322, "h": 51}, "captionText": "여성의 배가 불룩해 보이지만 임신한 것이 아니에요.\n당시 유행하던 넉넉한 옷감 때문이에요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "8 / 9", "prev": {"x": 274, "y": 766, "w": 44, "h": 44}, "next": {"x": 318, "y": 766, "w": 44, "h": 44}, "nextText": "다음", "overlay": {"x": 40, "y": 687, "w": 322, "h": 123}, "spots": [{"x": 46, "y": 148, "w": 326, "h": 408}], "spotDim": "0.6", "rim": false, "scale": 0.444921875, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_08.webp"}, {"image": {"x": 74, "y": 150, "w": 252, "h": 345}, "minimap": null, "coverInfo": null, "coverTitle": null, "caption": {"x": 40, "y": 687, "w": 322, "h": 51}, "captionText": "이 그림을 결혼식 장면으로 보는 해석도 있었지만,\n지금은 더 이상 받아들여지지 않아요.", "count": {"x": 40, "y": 777, "w": 29, "h": 22}, "countText": "9 / 9", "prev": {"x": 257, "y": 766, "w": 44, "h": 44}, "next": {"x": 301, "y": 766, "w": 61, "h": 44}, "nextText": "해설 끝", "overlay": {"x": 40, "y": 687, "w": 322, "h": 123}, "spots": [], "spotDim": null, "rim": false, "scale": 0.13127113978068033, "styles": {"caption": {"font-size": "16px", "font-weight": "500", "line-height": "25.6px", "letter-spacing": "-0.16px", "color": "rgb(255, 239, 209)"}, "coverTitle": {"font-size": "32px", "font-weight": "700", "letter-spacing": "-0.64px", "color": "rgb(255, 239, 209)"}, "coverMeta": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "count": {"font-size": "14px", "font-weight": "400", "color": "rgb(255, 239, 209)"}, "next": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "background-color": "rgba(0, 0, 0, 0)", "height": "44px", "border-radius": "0px"}, "prev": {"font-size": "16px", "font-weight": "700", "color": "rgb(255, 239, 209)", "height": "44px"}}, "vars": {"--c-bg": "#030303", "--c-primary": "#FFEFD1", "--c-navy": "#06163B", "--fs-lg": "18px", "--spot-dim": "0.6", "--spot-feather": "8px", "--t-move": "850ms", "--ease-move": "cubic-bezier(0.65, 0, 0.35, 1)", "--viewer-fade": "64px", "--cover-fade-h": "55%", "--cover-info-b": "120px", "--minimap-w": "72px", "--caption-safe-x": "40px", "--caption-safe-b": "64px", "--btn-h": "48px", "--btn-radius": "12px", "--tap-min": "44px"}, "file": "arnolfini_09.webp"}]}, "states": [{"file": "state_badlink.webp", "label": "에러 — 잘못된 링크", "text": "잘못된 링크예요. 받은 링크를 다시 확인해 주세요."}, {"file": "state_imgfail.webp", "label": "에러 — 그림 불러오기 실패", "text": "그림을 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.\n\n다시 시도"}, {"file": "state_loading.webp", "label": "로딩", "text": "그림을 불러오고 있어요…"}]};
+const ART_NAMES = { goldsmith: '금세공인 (본 테스트)', arnolfini: '아르놀피니 (베타)' };
+const W = 402, H = 874;
+let art = 'goldsmith';
+
+const px = (n) => Math.round(n) + 'px';
+const clip = (r) => { // 화면 밖으로 나간 사각형을 화면 안으로 자름
+  const x = Math.max(0, r.x), y = Math.max(0, r.y);
+  const x2 = Math.min(W, r.x + r.w), y2 = Math.min(H, r.y + r.h);
+  return { x, y, w: Math.max(0, x2 - x), h: Math.max(0, y2 - y), cut: x !== r.x || y !== r.y || x2 !== r.x + r.w || y2 !== r.y + r.h };
+};
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function box(r, color, label, opt = {}) {
+  if (!r) return '';
+  const c = clip(r);
+  if (!c.w || !c.h) return '';
+  let tagTop = opt.tagBelow ? c.y + c.h + 2 : Math.max(0, c.y - 16);
+  let tagLeft = Math.min(c.x, W - 120);
+  if (opt.inside) { tagTop = c.y + 4; tagLeft = Math.max(c.x + 4, Math.min(c.x + c.w, W) - 170); }
+  return `<div class="box ${opt.ell ? 'ell' : ''}" style="--c:${color};left:${px(c.x)};top:${px(c.y)};width:${px(c.w)};height:${px(c.h)}"></div>
+    <div class="tag" style="--c:${color};left:${px(tagLeft)};top:${px(tagTop)}">${esc(label)}</div>`;
+}
+function vdim(x, y1, y2, label, side = 'r') {
+  if (y2 - y1 < 2) return '';
+  return `<div class="dim v" style="left:${px(x)};top:${px(y1)};height:${px(y2 - y1)}"><b style="${side === 'r' ? 'left:3px' : 'right:3px'};top:${px((y2 - y1) / 2 - 8)}">${label}</b></div>`;
+}
+function hdim(y, x1, x2, label) {
+  if (x2 - x1 < 2) return '';
+  return `<div class="dim h" style="top:${px(y)};left:${px(x1)};width:${px(x2 - x1)}"><b style="top:2px;left:${px((x2 - x1) / 2 - 14)}">${label}</b></div>`;
+}
+
+function scenes() { return DATA.arts[art]; }
+function coverScale() { return scenes()[1].scale; } // 기준 = 장면 1 (작품 전체)
+
+function annotate(s, idx) {
+  const st = s.styles || {};
+  const isCover = idx === 0;
+  let h = '';
+  const zoom = s.scale && coverScale() ? (s.scale / coverScale()) : 1;
+  h += box(s.image, 'var(--a-image)', isCover ? `그림 (꽉 채움 ×${zoom.toFixed(1)})` : `그림 · 작품 전체 대비 ×${zoom.toFixed(1)}`, { inside: true });
+  (s.spots || []).forEach((sp, k) => {
+    h += box(sp, 'var(--a-spot)', `강조 타원${s.spots.length > 1 ? ' ' + (k + 1) : ''} · 주변 어둡기 ${Math.round((+s.spotDim) * 100)}%${s.rim ? ' + 크림 빛' : ''}`, { ell: true, tagBelow: true });
+  });
+  h += box(s.minimap, 'var(--a-map)', '위치 지도', { tagBelow: true });
+  if (st.caption && s.caption) {
+    const lines = Math.round(s.caption.h / parseFloat(st.caption['line-height']));
+    h += box(s.caption, 'var(--a-caption)', `자막 ${st.caption['font-size']} · ${st.caption['font-weight']} · ${lines}줄`);
+  }
+  if (isCover && s.coverInfo) h += box(s.coverInfo, 'var(--a-cover)', `작품명 ${st.coverTitle?.['font-size']} 굵게 / 작가·연도 ${st.coverMeta?.['font-size']}`);
+  h += box(s.count, 'var(--a-nav)', isCover ? `안내 ${st.count?.['font-size']}` : `쪽수 ${st.count?.['font-size']}`, { tagBelow: true });
+  if (s.prev) h += box(s.prev, 'var(--a-nav)', `이전 ${s.prev.w}×${s.prev.h}`);
+  if (s.next) h += box(s.next, 'var(--a-nav)', isCover ? `다음 버튼 ${s.next.w}×${s.next.h} · 크림 바탕` : `다음 ${s.next.w}×${s.next.h}`, { tagBelow: false });
+  // 치수
+  if (isCover && s.coverInfo) {
+    const nb = s.next || s.count; if (nb) h += vdim(W - 24, s.coverInfo.y + s.coverInfo.h, nb.y, `${nb.y - s.coverInfo.y - s.coverInfo.h}`, 'l');
+    h += vdim(24, H - Math.round(H * parseFloat(s.vars['--cover-fade-h']) / 100), H, `그라데이션 ${s.vars['--cover-fade-h']}`);
+  }
+  if (idx === 1 && s.image && s.caption) { h += vdim(W - 30, 0, s.image.y, `${s.image.y}`, 'l'); h += vdim(W - 30, s.image.y + s.image.h, s.caption.y, `${s.caption.y - s.image.y - s.image.h}`, 'l'); }
+  if (s.caption) {
+    if (s.prev || s.next) { const b = s.next || s.prev; h += vdim(W - 8, s.caption.y + s.caption.h, b.y, `${b.y - s.caption.y - s.caption.h}`, 'l'); }
+    if (s.image) { const ib = s.image.y + s.image.h; if (ib < s.caption.y && ib > 0) h += vdim(W / 2, ib, s.caption.y, `그림↔자막 ${s.caption.y - ib}`); }
+  }
+  const nb = s.next || s.count; if (nb) h += vdim(W / 2 + 40, nb.y + nb.h, H, `아래 ${H - nb.y - nb.h}`);
+  return h;
+}
+
+function wireframe(s, idx) {
+  const isCover = idx === 0;
+  let h = '';
+  if (s.image) { const c = clip(s.image); h += `<div class="wf-img" style="left:${px(c.x)};top:${px(c.y)};width:${px(c.w)};height:${px(c.h)}"></div>`; }
+  if (s.spots && s.spots.length) {
+    h += '<div class="wf-dimout"></div>';
+    s.spots.forEach((sp) => { const c = clip(sp); h += `<div class="wf-ell" style="left:${px(sp.x)};top:${px(sp.y)};width:${px(sp.w)};height:${px(sp.h)}"></div>`; });
+  }
+  const el = (r, txt, cls = '') => r ? `<div class="wf-el ${cls}" style="left:${px(r.x)};top:${px(r.y)};width:${px(r.w)};height:${px(r.h)}">${esc(txt)}</div>` : '';
+  h += el(s.minimap, '지도');
+  if (isCover) h += el(s.coverInfo, '작품명 / 작가 · 연도 · 소장처', 'text');
+  if (s.caption) h += el(s.caption, s.captionText, 'text');
+  h += el(s.count, isCover ? s.countText : s.countText, 'text');
+  if (s.prev) h += el(s.prev, '이전');
+  if (s.next) h += el(s.next, s.nextText, isCover ? 'btn-fill' : '');
+  return h;
+}
+
+function flags(s, idx) {
+  const out = [];
+  const stageH = s.caption ? s.caption.y : H;
+  (s.spots || []).forEach((sp) => {
+    const c = clip(sp);
+    if (c.w * c.h > 0.6 * W * stageH) out.push('강조 타원이 그림 영역의 60% 이상을 덮어 주변이 거의 어두워지지 않음');
+    else if (c.cut) out.push('강조 타원이 화면 밖으로 잘림');
+  });
+  if (idx > 0 && s.caption && s.styles?.caption) {
+    const lines = Math.round(s.caption.h / parseFloat(s.styles.caption['line-height']));
+    if (lines >= 4) out.push(`자막 ${lines}줄 — 그림 영역이 줄어듦`);
+  }
+  if (idx > 0 && (!s.spots || !s.spots.length)) out.push('강조 없음 (작품 전체를 보여 주는 장면)');
+  return out;
+}
+
+function card(s, idx, title, sub, inner, metaHtml) {
+  return `<article class="card" id="${art}-${idx}">
+    <h3>${esc(title)}<span>${esc(sub || '')}</span></h3>
+    <div class="phone">
+      <img class="shot" src="img_402x874/${s.file}" alt="${esc(title)} 캡처" loading="lazy">
+      <div class="wf-layer">${inner.wf || ''}</div>
+      <div class="ann">${inner.ann || ''}</div>
+      <div class="ios" aria-hidden="true"><div class="zone-t"><b>상태 표시줄 62</b></div><div class="island"></div><span class="time">9:41</span><span class="icons"><i></i><i></i><i></i></span><div class="zone-b"><b>홈 34</b></div><div class="home"></div></div>
+    </div>
+    <div class="meta">${metaHtml || ''}</div>
+  </article>`;
+}
+
+function render() {
+  const list = scenes();
+  document.getElementById('scenes-title').textContent = `장면 — ${ART_NAMES[art]}`;
+  // 흐름
+  const n = list.length - 1;
+  document.getElementById('flow-lead').textContent = `디폴트 화면 + 해설 ${n}장면. [다음]/[이전]으로만 넘김. 마지막 장면의 버튼은 "${list[n].nextText}".`;
+  document.getElementById('flow').innerHTML = list.map((s, i) =>
+    `${i ? '<span class="arr">→</span>' : ''}<a href="#${art}-${i}">${i === 0 ? '디폴트' : i + '. ' + esc((s.captionText || '').slice(0, 10)) + '…'}</a>`
+  ).join('') + '<span class="arr">→</span><span class="flow end">해설 끝 → (테스트: 퀴즈 / 시연: 마침)</span>';
+  // 장면
+  document.getElementById('scenes').innerHTML = list.map((s, i) => {
+    const zoom = s.scale && coverScale() ? s.scale / coverScale() : 1;
+    const fl = flags(s, i);
+    const meta = `${s.captionText ? `<p>${esc(s.captionText)}</p>` : `<p>${esc(s.countText)}</p>`}
+      <dl>
+        <dt>확대</dt><dd>${i === 0 ? '꽉 채움 (작품별 중심점)' : i === 1 ? '작품 전체 (기준)' : '작품 전체 대비 ×' + zoom.toFixed(1)}</dd>
+        ${s.spots && s.spots.length ? `<dt>강조</dt><dd>타원 ${s.spots.length}개 · 어둡기 ${Math.round(+s.spotDim * 100)}%${s.rim ? ' · 크림 빛' : ''}</dd>` : ''}
+        ${s.caption ? `<dt>자막 상자</dt><dd>${s.caption.w}×${s.caption.h}px, y=${s.caption.y}</dd>` : ''}
+      </dl>
+      ${fl.map((f) => `<span class="flag">${esc(f)}</span>`).join(' ')}`;
+    return card(s, i, i === 0 ? '디폴트 화면' : `장면 ${i}`, i === 0 ? '번호 없음' : `${i} / ${n}`, { ann: annotate(s, i), wf: wireframe(s, i) }, meta);
+  }).join('');
+  // 상태
+  document.getElementById('states').innerHTML = DATA.states.map((s, i) =>
+    card(s, 's' + i, s.label, '', {}, `<p>${esc(s.text)}</p>`)).join('');
+  // 디자인 값
+  const v = list[1].vars, st = list[1].styles, sc = list[0].styles;
+  const sw = (c) => `<span class="sw" style="background:${c}"></span>${c}`;
+  document.getElementById('spec-lead').textContent = '원본은 test-web/css/style.css :root — 아래는 화면에서 실제로 읽은 값';
+  const panel = (t, rows) => `<div class="panel"><h4>${t}</h4><table>${rows.map(([k, val]) => `<tr><td>${k}</td><td>${val}</td></tr>`).join('')}</table></div>`;
+  document.getElementById('spec').innerHTML = [
+    panel('색', [['바탕', sw(v['--c-bg'])], ['크림 (글자·버튼·지도)', sw(v['--c-primary'])], ['남색 (크림 위 글자)', sw(v['--c-navy'])]]),
+    panel('글자', [['자막', `${st.caption['font-size']} · 굵기 ${st.caption['font-weight']} · 줄간 ${st.caption['line-height']} · 자간 ${st.caption['letter-spacing']}`],
+      ['작품명 (디폴트)', `${sc.coverTitle['font-size']} · 굵기 ${sc.coverTitle['font-weight']}`], ['작가 · 연도 (디폴트)', `${sc.coverMeta['font-size']} · 굵기 ${sc.coverMeta['font-weight']}`],
+      ['쪽수 · 안내', `${st.count['font-size']}`], ['이전 / 다음', `${st.next['font-size']} · 굵기 ${st.next['font-weight']}`]]),
+    panel('강조 · 움직임', [['주변 어둡기', v['--spot-dim']], ['가장자리 흐림', v['--spot-feather']], ['확대·이동 시간', v['--t-move']], ['곡선', v['--ease-move']], ['그림 아래 끝 흐림', v['--viewer-fade']]]),
+    panel('배치', [['디폴트 화면', `그림 꽉 채움 · 아래 그라데이션 ${v['--cover-fade-h']} · 정보 아래 ${v['--cover-info-b']}`], ['자막 좌우 · 아래 여백', `${v['--caption-safe-x']} · ${v['--caption-safe-b']}`], ['위치 지도 폭', v['--minimap-w']],
+      ['다음 버튼 (디폴트)', `높이 ${sc.next.height} · 모서리 ${sc.next['border-radius']}`], ['글자 버튼 최소 누름 영역', v['--tap-min']]]),
+  ].join('');
+}
+
+// 컨트롤
+const artSeg = document.getElementById('art');
+artSeg.innerHTML = Object.keys(DATA.arts).map((k) => `<button data-art="${k}" aria-pressed="${k === art}">${ART_NAMES[k] || k}</button>`).join('');
+artSeg.onclick = (e) => { const b = e.target.closest('button'); if (!b) return; art = b.dataset.art; artSeg.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); render(); };
+document.getElementById('mode').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; document.body.classList.toggle('wf', b.dataset.mode === 'wf'); e.currentTarget.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); };
+document.getElementById('t-ann').onchange = (e) => document.body.classList.toggle('show-ann', e.target.checked);
+document.getElementById('t-dim').onchange = (e) => document.body.classList.toggle('show-dim', e.target.checked);
+document.getElementById('t-ios').onchange = (e) => document.body.classList.toggle('show-ios', e.target.checked);
+// (v4) 아이폰 화면 요소는 기본으로 꺼 둠 (사용자 결정) — 체크하면 켜짐
+render();
+</script>
+</body>
+</html>

@@ -102,3 +102,10 @@ PRODUCT.md       테스트 웹의 목적·사용자·제약
 - 디자인 결정 기록: [`docs/records/DESIGN_DECISION_LOG.md`](docs/records/DESIGN_DECISION_LOG.md)
 - 회고: [`docs/records/RETROSPECTIVE_NOTES.md`](docs/records/RETROSPECTIVE_NOTES.md)
 - 테스트 분석: [본 테스트](docs/records/MAIN_ANALYSIS_20261102.md) · [베타](docs/records/BETA_ANALYSIS_20261029.md)
+
+### 화면 보드
+
+로컬 서버로 연다 (`cd docs/boards && python -m http.server 8003`).
+
+- 시연 화면 보드 `docs/boards/screens/` — B 해설 장면별 캡처 + 요소 치수 + 와이어프레임 (http://localhost:8003/screens/)
+- A/B 동시 시연 보드 `docs/boards/ab_demo/ab.html` — 테스트 첫 화면부터 A와 B를 나란히 눌러 보기, 베타·본 테스트 전환 (http://localhost:8003/ab_demo/ab.html). 테스트 웹 사본이지만 기록 주소를 비워 두어 아무 데이터도 보내지 않는다

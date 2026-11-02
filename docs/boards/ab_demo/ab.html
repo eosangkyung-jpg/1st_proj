@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A·B 함께 보기</title>
+<!-- 발표 시연용: A(글 설명만)와 B(확대·강조)를 한 화면에 나란히 띄운다.
+     ?t=beta  → 베타 테스트 (〈아르놀피니 부부의 초상〉, A vs B v1) — 베타 당시 백업(beta/)을 로컬에서 띄움, 시트로 보내지 않음
+     ?t=main  → 본 테스트 (〈작업실의 금세공인〉, A vs B v2) — 테스트 웹 로컬 사본(main/), 표지부터 끝까지, 시트로 보내지 않음 -->
+<style>
+  :root { --bg:#030303; --cream:#FFEFD1; --navy:#06163B; --line:#6A7FAE; }
+  * { box-sizing:border-box; margin:0; }
+  html,body { height:100%; background:var(--bg); color:var(--cream); font-family:Pretendard, "Malgun Gothic", sans-serif; }
+  body { display:flex; flex-direction:column; }
+  header { padding:16px 32px 8px; display:flex; align-items:baseline; gap:16px; flex-wrap:wrap; }
+  h1 { font-size:24px; letter-spacing:-0.02em; }
+  header p { font-size:14px; opacity:.8; }
+  header nav { margin-left:auto; display:flex; gap:8px; }
+  header nav a { color:var(--cream); font-size:14px; text-decoration:none; border:1px solid var(--line); border-radius:12px; padding:6px 12px; }
+  header nav a[aria-current] { background:var(--cream); color:var(--navy); }
+  main { flex:1; display:flex; justify-content:center; gap:48px; padding:8px 32px 20px; min-height:0; }
+  .col { display:flex; flex-direction:column; align-items:center; gap:8px; min-height:0; }
+  .tag { display:flex; align-items:center; gap:10px; font-size:16px; }
+  .tag b { display:inline-grid; place-items:center; width:32px; height:32px; border-radius:8px; background:var(--cream); color:var(--navy); font-size:18px; }
+  .tag button { font:inherit; font-size:13px; color:var(--cream); background:none; border:1px solid var(--line); border-radius:8px; padding:3px 10px; cursor:pointer; }
+  .col { flex:none; }
+  .col[hidden] { display:none; }
+  #common .tag b { width:auto; padding:0 8px; }
+  .phone { position:relative; flex:none; height:calc(100vh - 124px); aspect-ratio:402/874; border:1px solid var(--line); border-radius:24px; overflow:hidden; }
+  .phone iframe { position:absolute; left:0; top:0; width:402px; height:874px; border:0; transform-origin:0 0; background:#000; }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title"></h1>
+  <p id="sub"></p>
+  <nav><a href="?t=beta" id="nav-beta">베타 테스트</a><a href="?t=main" id="nav-main">본 테스트</a></nav>
+</header>
+<main>
+  <div class="col" id="common" hidden><div class="tag"><b>A·B</b>공통 — "상황을 떠올려 주세요"까지는 같은 화면 <button id="r-common">처음부터</button></div><div class="phone"><iframe title="A·B 공통 화면"></iframe></div></div>
+  <div class="col"><div class="tag"><b>A</b>글 설명만 <button data-r="0">해설 처음부터</button></div><div class="phone"><iframe title="A 화면"></iframe></div></div>
+  <div class="col"><div class="tag"><b>B</b><span id="b-label"></span> <button data-r="1">해설 처음부터</button></div><div class="phone"><iframe title="B 화면"></iframe></div></div>
+</main>
+<script>
+  const SETS = {
+    beta: {
+      title: '베타 테스트 — A vs B',
+      sub: '10/29 · 〈아르놀피니 부부의 초상〉 · 완료 20명 · 참가자는 자기 그룹을 모른 채 접속 순서대로 A·B 번갈아 배정',
+      b: '확대·강조 v1 (노란 테두리)',
+      src: ['beta/test-web/index.html?phase=test&group=A&demo=1', 'beta/test-web/index.html?phase=test&group=B&demo=1'],
+    },
+    main: {
+      title: '본 테스트 — A vs B',
+      sub: '11/1~2 · 〈작업실의 금세공인〉 · 완료 15명 · 같은 방식으로 다시 확인',
+      b: '확대·강조 v2 (주변 어둡게)',
+      // (11/3) 표지(일러스트)부터 "상황을 떠올려 주세요"까지는 A·B가 같아 한 화면(common)으로 → [시작하기]를 누르면 A·B 나란히 (해설부터)
+      // 본 테스트 웹의 로컬 사본(main/), 시트로 보내지 않음
+      common: 'main/test-web/index.html?phase=test&group=A&art=goldsmith&demo=1&split=1',
+      src: ['main/test-web/index.html?phase=test&group=A&art=goldsmith&demo=1&start=explain', 'main/test-web/index.html?phase=test&group=B&art=goldsmith&demo=1&start=explain'],
+    },
+  };
+  const key = new URLSearchParams(location.search).get('t') === 'main' ? 'main' : 'beta';
+  const set = SETS[key];
+  document.title = set.title;
+  document.getElementById('title').textContent = set.title;
+  document.getElementById('sub').textContent = set.sub;
+  document.getElementById('b-label').textContent = set.b;
+  document.getElementById('nav-' + key).setAttribute('aria-current', 'page');
+  const frames = [...document.querySelectorAll('iframe')]; // [0] 공통, [1] A, [2] B
+  const cols = [...document.querySelectorAll('main .col')];
+  const load = (f, url) => { f.src = 'about:blank'; setTimeout(() => { f.src = url; }, 50); };
+  function showSplit() {            // A·B 나란히
+    cols[0].hidden = true; cols[1].hidden = false; cols[2].hidden = false;
+    load(frames[1], set.src[0]); load(frames[2], set.src[1]); fit();
+  }
+  function showCommon() {           // 공통 화면 하나 (본 테스트만)
+    cols[0].hidden = false; cols[1].hidden = true; cols[2].hidden = true;
+    load(frames[0], set.common); fit();
+  }
+  if (set.common) showCommon(); else showSplit();
+  // 공통 화면에서 [시작하기]를 누르면 테스트 웹이 알려 줌 → A·B로 나눔
+  window.addEventListener('message', (e) => { if (e.data && e.data.dive === 'split') showSplit(); });
+  document.getElementById('r-common').addEventListener('click', showCommon);
+  document.querySelectorAll('[data-r]').forEach(btn => btn.addEventListener('click', () => {
+    const i = +btn.dataset.r; load(frames[i + 1], set.src[i]);
+  }));
+  // 402×874 화면을 칸 크기에 맞춰 줄임
+  function fit() { frames.forEach(f => { const w = f.parentElement.clientWidth; f.style.transform = `scale(${w / 402})`; }); }
+  new ResizeObserver(fit).observe(document.querySelector('main'));
+  fit();
+</script>
+</body>
+</html>
