@@ -1,0 +1,409 @@
+/* DIVE 소개 페이지 (11/2)
+   값은 제품 기준(test-web/css/style.css :root의 [제품] 값, CLAUDE.md 디자인 규칙)을 그대로 옮겨 쓴다.
+   이 파일에만 있는 값은 [소개 전용]으로 표시 */
+
+@font-face {
+  font-family: "Cafe24ProSlim";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/2511-1@1.0/Cafe24PROSlim-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  /* [제품] 색 */
+  --c-bg: #030303;
+  --c-cream: #FFEFD1;          /* Papaya Whip — DIVE의 밝은 색은 크림 하나 */
+  --c-navy: #06163B;           /* Prussian Blue — 크림 위 글자 */
+  --c-regal: #073582;          /* Regal Navy */
+  --c-text: var(--c-cream);
+  --c-text-dim: color-mix(in srgb, var(--c-cream) 72%, var(--c-bg)); /* [소개 전용] 보조 글 — 바탕 대비 11:1 이상 */
+  --c-line: color-mix(in srgb, var(--c-cream) 18%, var(--c-bg));     /* [소개 전용] 구분선·틀 */
+  --c-panel: color-mix(in srgb, var(--c-cream) 5%, var(--c-bg));     /* [소개 전용] 비교 칸 면 */
+  --c-accent: var(--c-cream);  /* 강조 버튼·고른 칩·번호 원·초점 — 어두운 바탕에서는 크림 */
+  --c-on-accent: var(--c-navy);
+  --c-frame-ring: color-mix(in srgb, var(--c-cream) 6%, var(--c-bg)); /* [소개 전용] 휴대폰 틀 바깥 고리 */
+  /* [제품] 푸터 이미지 원본 색 (ref_image/footer_loop/README.md) */
+  --c-sea: #02327F;
+  --c-sea-cream: #FFF7D7;
+  --beam-start: 0.55; --beam-end: 0.08; --pool: 0.10;
+
+  /* [제품] 글꼴·크기 단계 14·15·16·18·24·32 + [소개 전용] 큰 제목 */
+  --font: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-title: "Cafe24ProSlim", var(--font);
+  --fs-xs: 14px; --fs-sm: 15px; --fs-md: 16px; --fs-lg: 18px; --fs-xl: 24px; --fs-2xl: 32px;
+  --fs-display: clamp(44px, 7.4vw, 84px);  /* [소개 전용] 첫 화면 제목 */
+  --fs-title: clamp(28px, 3.6vw, 44px);    /* [소개 전용] 섹션 제목 */
+  --ls-title: -0.02em; --ls-body: -0.01em; --ls-small: 0;
+
+  /* [제품] 간격 4px 배수 */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-12: 48px; --sp-16: 64px; --sp-24: 96px; --sp-32: 128px;
+  --gutter: var(--sp-4);       /* 휴대폰 좌우 여백 16px */
+  --wrap: 1120px;              /* [소개 전용] 본문 최대 폭 */
+  --top-h: 64px;               /* [소개 전용] 위 메뉴 높이 */
+
+  /* [제품] 버튼·움직임 */
+  --btn-h: 48px; --btn-r: 12px;
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+  --t-fast: 200ms;
+  /* [제품] 휴대폰 틀 (아이폰 17) */
+  --phone-ratio: 402 / 874;
+  --phone-r: 36px;             /* [소개 전용] 틀 모서리 */
+}
+@media (min-width: 768px) { :root { --gutter: var(--sp-10); } }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; } /* 메뉴가 투명해 섹션 위 여백에 겹치므로 메뉴 높이만큼 띄우지 않음 */
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0;
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font);
+  font-size: var(--fs-md);
+  line-height: 1.65;
+  letter-spacing: var(--ls-body);
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+h1, h2, h3, p, ol, ul, figure { margin: 0; }
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: var(--sp-1); }
+
+.skip { position: absolute; left: var(--sp-4); top: -100px; z-index: 30; padding: var(--sp-2) var(--sp-4); background: var(--c-cream); color: var(--c-navy); font-weight: 700; border-radius: var(--sp-2); }
+.skip:focus { top: var(--sp-2); }
+
+.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ── 위 메뉴 (11/2: 바탕 투명, 사용자 결정) ──
+   첫 화면 위에 겹쳐 바다가 비치고, 크림 영역으로 내려가면 글자만 네이비 (site.js가 .is-light를 붙임) */
+.top {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+  background: transparent;
+  --c-text: var(--c-sea-cream);
+  color: var(--c-text);
+  transition: color var(--t-fast);
+}
+.top.is-light { --c-text: var(--c-regal); background: var(--c-cream); box-shadow: 0 1px 0 color-mix(in srgb, var(--c-regal) 14%, transparent); }
+/* (11/2 사용자) 첫 화면을 지나면 Porcelain 바탕, 아래로 스크롤하면 숨고 위로 스크롤하면 다시 나타남 (site.js가 .is-hidden) */
+.top { transition: color var(--t-fast), background-color var(--t-fast), transform 320ms var(--ease-move); }
+.top.is-hidden { transform: translateY(-100%); }
+@media (prefers-reduced-motion: reduce) { .top { transition: none; } }
+.top-inner { max-width: var(--wrap); margin: 0 auto; padding: 0 var(--gutter); height: var(--top-h); display: flex; align-items: center; justify-content: flex-end; gap: var(--sp-4); } /* (11/2) 로고 삭제(사용자) → 메뉴만 오른쪽 */
+.brand { font-family: var(--font-title); font-weight: 700; font-size: var(--fs-xl); letter-spacing: 0.04em; text-decoration: none; }
+.menu { display: flex; gap: var(--sp-1); align-items: baseline; }
+.menu a {
+  display: inline-flex; align-items: center; min-height: 44px; padding: 0 var(--sp-3);
+  font-size: var(--fs-xs); font-weight: 600; letter-spacing: var(--ls-small);
+  text-decoration: none; color: var(--c-text); border-radius: var(--sp-2);
+  text-underline-offset: 6px; text-decoration-thickness: 2px;
+}
+.menu a:hover, .menu a[aria-current="true"] { text-decoration-line: underline; } /* 지금 보는 메뉴 = 밑줄 (글자색은 하나로) */
+@media (max-width: 480px) {
+  .brand { font-size: var(--fs-lg); }
+  .menu a { padding: 0 var(--sp-2); font-size: 13px; }
+}
+
+/* ── 버튼·링크 ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--btn-h); padding: 0 var(--sp-6); border-radius: var(--btn-r);
+  background: var(--c-accent); color: var(--c-on-accent);
+  font-weight: 700; font-size: var(--fs-md); text-decoration: none; border: 0; cursor: pointer;
+  transition: transform var(--t-fast) var(--ease-move);
+}
+.btn:hover { transform: translateY(-1px); }
+.text-link { display: inline-flex; align-items: center; gap: var(--sp-1); min-height: 44px; font-weight: 600; font-size: var(--fs-sm); color: var(--c-text); text-underline-offset: 4px; }
+.text-link.inline { display: inline; min-height: 0; }
+.cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-4) var(--sp-6); margin-top: var(--sp-8); }
+
+/* ── 휴대폰 틀 (그림 이미지·시연) ── */
+.phone {
+  aspect-ratio: var(--phone-ratio);
+  border-radius: var(--phone-r);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--c-line), 0 0 0 8px var(--c-frame-ring);
+  background: var(--c-bg);
+}
+.phone img { width: 100%; height: 100%; object-fit: cover; }
+.phone.small { --phone-r: 24px; box-shadow: 0 0 0 1px var(--c-line); }
+
+/* ── 첫 화면 (11/2: 위에 글, 아래에 심해 액자 + 잠수함 루프를 원본 그대로 가로로 꽉 차게) ──
+   휴대폰: 장면을 4:3으로 잘라 잠수함~액자만 (site.js) */
+.hero {
+  --c-text: var(--c-sea-cream);
+  --c-text-dim: var(--c-sea-cream); /* 바다 위 보조 글도 크림 그대로 (섞으면 바래 보임) */
+  background: var(--c-sea);
+  color: var(--c-text);
+}
+.hero .btn { background: var(--c-sea-cream); color: var(--c-regal); } /* (11/2 사용자) 글자 = 밝은 네이비 (이전 Prussian #06163B) */
+.display { font-family: var(--font-title); font-weight: 700; font-size: clamp(44px, 5vw, 76px); line-height: 1.12; letter-spacing: var(--ls-title); }
+.display span { display: block; white-space: nowrap; }
+.lead { margin-top: var(--sp-6); max-width: 34em; font-size: var(--fs-lg); line-height: 1.7; color: var(--c-text-dim); }
+.hero-copy { padding: calc(var(--top-h) + var(--sp-12)) 0 var(--sp-8); }
+@media (min-width: 900px) {
+  /* (11/2) 제목·버튼을 그림 안 왼쪽 위 빈 바다에 얹음 (사용자 요청). 그림은 자르지 않고 가로 꽉 차게 */
+  .hero { position: relative; }
+  .hero .scene { aspect-ratio: 1915 / 951; } /* 그림 위로 바다 130만큼 더 (site.js viewBox, 11/2 260 → 130 사용자) */
+  .hero-copy { position: absolute; top: 0; left: 0; right: 0; z-index: 1; padding: calc(var(--top-h) + clamp(var(--sp-8), 5vw, 104px)) 0 0; pointer-events: none; } /* (11/2 사용자) 아래로 — 위 바다 영역을 절반으로 줄이며 해초에 닿지 않게 다시 맞춤 */
+  .hero-text { pointer-events: auto; width: fit-content; margin-left: clamp(var(--sp-3), 3vw, 56px); } /* (11/2 사용자) 오른쪽으로 옮겼다가 살짝씩 왼쪽 (7vw → 4vw → 3vw) */
+  .hero .display { font-size: clamp(40px, 4.2vw, 68px); }
+  .hero .cta { margin-top: clamp(var(--sp-1), 0.6vw, var(--sp-3)); } /* (11/2 사용자) DIVE ↔ 버튼 더 좁힘 (12~24 → 4~12px) */
+  .hero .hero-logo { margin-top: clamp(var(--sp-2), 0.9vw, var(--sp-3)); } /* (11/2 사용자) DIVE만 살짝 아래로 — 줄인 간격만큼 내려 버튼 자리는 그대로 */
+}
+
+/* ── 섹션 공통 ── */
+.block { padding: var(--sp-24) 0; border-top: 1px solid var(--c-line); }
+@media (min-width: 900px) { .block { padding: var(--sp-32) 0; } }
+.label { font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em; color: var(--c-text-dim); }
+.label span { color: var(--c-text); margin-right: var(--sp-2); font-variant-numeric: tabular-nums; }
+.title { margin-top: var(--sp-4); font-family: var(--font-title); font-weight: 700; font-size: var(--fs-title); line-height: 1.25; letter-spacing: var(--ls-title); }
+.body { margin-top: var(--sp-6); max-width: 40em; font-size: var(--fs-lg); line-height: 1.75; color: var(--c-text-dim); }
+.note { margin-top: var(--sp-8); max-width: 48em; font-size: var(--fs-xs); line-height: 1.6; letter-spacing: var(--ls-small); color: var(--c-text-dim); }
+strong { font-weight: 700; color: var(--c-text); }
+
+/* 01 비교 */
+.compare { margin-top: var(--sp-12); display: grid; gap: var(--sp-4); }
+@media (min-width: 768px) { .compare { grid-template-columns: 1fr 1fr; } }
+.compare-item { padding: var(--sp-6); border-radius: var(--btn-r); background: var(--c-panel); border: 1px solid var(--c-line); color: var(--c-text-dim); }
+.compare-item.is-muted { border-style: dashed; }
+.compare-head { margin-bottom: var(--sp-2); font-weight: 700; font-size: var(--fs-md); color: var(--c-text); }
+
+/* ── 시연 ── */
+.demo-grid { display: grid; gap: var(--sp-12); align-items: center; }
+@media (min-width: 900px) { .demo-grid { grid-template-columns: 1fr auto; gap: var(--sp-16); } }
+.art-pick { margin-top: var(--sp-8); display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.chip {
+  min-height: 44px; padding: 0 var(--sp-4); border-radius: 999px;
+  border: 1px solid var(--c-line); background: transparent; color: var(--c-text-dim);
+  font: inherit; font-size: var(--fs-xs); font-weight: 600; letter-spacing: var(--ls-small); cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--c-accent); border-color: var(--c-accent); color: var(--c-on-accent); }
+.device { justify-self: center; }
+.device-frame {
+  /* 402×874 화면을 창 높이에 맞춰 줄임 — iframe 안은 휴대폰 화면 그대로 */
+  --frame-h: min(874px, calc(100vh - var(--top-h) - var(--sp-12) - var(--sp-4)));
+  height: var(--frame-h);
+  aspect-ratio: var(--phone-ratio);
+  border-radius: var(--phone-r);
+  overflow: hidden;
+  box-shadow: 0 0 0 1px var(--c-line), 0 0 0 10px var(--c-frame-ring);
+  background: var(--c-bg);
+}
+.device-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+/* 휴대폰: 틀 대신 [전체 화면으로 열기]만 (화면 안에 또 휴대폰 화면은 너무 작음) */
+@media (max-width: 899px) { .device { display: none; } }
+
+/* ── help&support ── */
+.steps { list-style: none; padding: 0; margin-top: var(--sp-12); display: grid; gap: var(--sp-6); }
+@media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); gap: var(--sp-8); } }
+.steps li { display: flex; gap: var(--sp-4); }
+.step-n { flex: none; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--c-accent); color: var(--c-on-accent); font-weight: 700; font-size: var(--fs-sm); }
+.steps h3 { font-size: var(--fs-md); font-weight: 700; line-height: 36px; }
+.steps p { margin-top: var(--sp-1); font-size: var(--fs-sm); color: var(--c-text-dim); }
+.faq-head { margin-top: var(--sp-16); }
+.faq { margin-top: var(--sp-4); border-top: 1px solid var(--c-line); max-width: 48em; }
+.faq details { border-bottom: 1px solid var(--c-line); }
+.faq summary { min-height: 56px; display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); cursor: pointer; font-weight: 600; list-style: none; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; font-size: var(--fs-xl); font-weight: 400; color: var(--c-text-dim); transition: transform var(--t-fast) var(--ease-move); }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { padding-bottom: var(--sp-5); color: var(--c-text-dim); font-size: var(--fs-sm); }
+
+/* ── 장면 (심해 액자 루프, ref_image/footer_loop/README.md) ── */
+.scene { position: relative; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; background: var(--c-sea); } /* 휴대폰: 잠수함~액자가 남게 site.js가 보는 범위를 줄임 */
+.scene svg { display: block; width: 100%; height: 100%; }
+.scene-error { position: absolute; inset: auto var(--gutter) var(--sp-4) var(--gutter); color: var(--c-sea-cream); font-size: var(--fs-xs); }
+.foot-bottom { padding: var(--sp-8) 0 calc(var(--sp-8) + env(safe-area-inset-bottom, 0px)); color: var(--c-text-dim); font-size: var(--fs-xs); letter-spacing: var(--ls-small); line-height: 1.7; }
+.foot-bottom .credit { margin-top: var(--sp-2); font-size: 12px; max-width: 52em; }
+
+/* 시연 섹션: 메뉴로 들어왔을 때 휴대폰 틀이 한 화면에 다 보이게 위아래 여백을 줄임 */
+@media (min-width: 900px) { .block.demo { padding: calc(var(--top-h) + var(--sp-4)) 0 var(--sp-8); } } /* 투명 메뉴가 틀에 겹치지 않게 메뉴 높이만큼 위를 띄움 */
+
+/* ── 크림 영역 (11/2, 사용자 결정): 첫 화면 아래부터 바탕 크림, 글자·강조 = 밝은 네이비(Regal Navy #073582)로 통일.
+   테스트 웹 크림 화면(.theme-cream)과 같은 짝 — 선은 Regal 45%를 섞은 크림 */
+.block, .foot-bottom {
+  --c-text: var(--c-regal);
+  --c-text-dim: var(--c-regal);
+  --c-line: color-mix(in srgb, var(--c-regal) 45%, var(--c-cream));
+  --c-panel: color-mix(in srgb, var(--c-regal) 6%, var(--c-cream));
+  --c-accent: var(--c-regal);
+  --c-on-accent: var(--c-cream);
+  --c-frame-ring: color-mix(in srgb, var(--c-regal) 12%, var(--c-cream));
+  background: var(--c-cream);
+  color: var(--c-text);
+}
+.block .device-frame { background: var(--c-bg); } /* 시연 화면 안은 제품 그대로 검정 */
+
+/* ── 오프닝 (11/2) ── 크림 바탕 + 밝은 네이비 글자. 시간 값은 js/intro.js 맨 위 T에 */
+html.intro-on { overflow: hidden; }
+.intro {
+  --font-intro-en: "Marcellus", Georgia, serif;   /* 영문 장면 글꼴 (사용자 지정, Google Fonts) */
+  position: fixed; inset: 0; z-index: 50;
+  display: grid; place-items: center;
+  padding: var(--gutter);
+  background: var(--c-cream); color: var(--c-regal);
+  transition: opacity 600ms ease;               /* 마지막 디졸브 (T.outro와 같게) */
+  animation: intro-failsafe 0s linear 20s forwards; /* 스크립트가 멈춰도 20초 뒤에는 사라짐 */
+  cursor: pointer;
+}
+@keyframes intro-failsafe { to { opacity: 0; visibility: hidden; } }
+.intro.is-out { opacity: 0; pointer-events: none; }
+.intro-stage { text-align: center; transition: opacity 250ms ease; } /* 장면 사이 빠른 디졸브 (T.swap) */
+.intro-stage.is-hidden { opacity: 0; }
+/* ① 한글 스크램블: 글자마다 최종 글자로 폭을 잡아 두고 그 위에 무작위 ASCII를 겹침 → 줄이 흔들리지 않음 */
+.intro-ko { font-family: var(--font-title); font-weight: 700; font-size: clamp(44px, 9vw, 120px); line-height: 1.15; letter-spacing: var(--ls-title); }
+.intro-ko .ln { display: block; white-space: nowrap; }
+.intro-ko .ch { position: relative; display: inline-block; }
+.intro-ko .ch .fin { visibility: hidden; }
+.intro-ko .ch.is-done .fin { visibility: visible; }
+.intro-ko .ch .rnd { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-intro-en); font-weight: 400; }
+.intro-ko .ch.is-done .rnd { display: none; }
+/* ②③ 영문 타이핑: 전체 문장을 투명하게 깔아 자리를 잡고, 그 위 같은 칸에 왼쪽부터 입력 → 가운데 정렬된 덩어리 안에서 글자가 늘어남 */
+.intro-en { display: inline-grid; text-align: left; font-family: var(--font-intro-en); font-size: clamp(44px, 10.5vw, 168px); line-height: 1.05; letter-spacing: -0.08em; } /* (11/2 사용자) 크게 + 자간 -8% (-20% → -10% → -8%, 이전 30~84px, +3%) */
+.intro-en > * { grid-area: 1 / 1; white-space: pre; }
+.intro-en .ghost { visibility: hidden; }
+@media (max-width: 600px) { .intro-en { font-size: 9.2vw; } } /* 휴대폰: 커서까지 화면 안에 여유 있게 */
+.intro-en.is-big { font-size: clamp(96px, min(26vw, 50vh), 460px); line-height: 1; letter-spacing: -0.08em; } /* ③ DIVE — (11/2 사용자) 훨씬 크게 + 자간 -8% (이전 56~180px, +6%) */
+.cursor { display: inline-block; margin-left: 0.04em; }
+.cursor.is-blink { animation: cursor-blink 1s steps(1) infinite; }
+@keyframes cursor-blink { 50% { opacity: 0; } }
+.intro-skip {
+  position: absolute; right: var(--gutter); bottom: calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
+  min-height: 44px; padding: 0 var(--sp-4); border: 0; background: none; color: var(--c-regal);
+  font: inherit; font-size: var(--fs-xs); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; cursor: pointer;
+}
+@media (prefers-reduced-motion: reduce) { .intro { display: none; } html.intro-on { overflow: auto; } }
+
+@media (max-width: 600px) { .intro-en.is-big { font-size: 34vw; } } /* 휴대폰: DIVE는 화면 폭 가득 (위 .is-big 규칙보다 뒤에 둬야 적용) */
+
+/* (11/2 사용자) 첫 화면 제목 = 오프닝 마지막과 같은 "DIVE" — Marcellus, 자간 -8%, I–V·V–E 사이만 -3% */
+.hero-logo { font-family: "Marcellus", Georgia, serif; font-weight: 400; font-size: clamp(72px, 11vw, 168px); line-height: 1; letter-spacing: -0.08em; }
+.hero-logo span { display: inline; white-space: normal; }
+.hero-logo .k { letter-spacing: -0.03em; }
+@media (min-width: 900px) { .hero .hero-logo { font-size: clamp(88px, 9.5vw, 168px); } }
+
+/* (11/2 사용자) 01 문제 비교 칸에 판화풍 일러스트 — 그림 바탕이 페이지 크림과 같아 칸의 면·테두리 없이 그림 + 글만.
+   (11/2 사용자 "70% 크기") 칸 폭을 열 전체(약 504px)가 아니라 고정 352px로 — 제목·본문과 같은 왼쪽 선에서 시작,
+   글은 그림 폭에 맞춰 짧은 줄로. 두 칸 사이는 넓게(64px), 그림 ↔ 소제목은 가깝게(20px), 소제목 ↔ 설명은 더 가깝게 */
+.compare { --compare-w: 352px; grid-template-columns: repeat(2, minmax(0, var(--compare-w))); justify-content: center; gap: var(--sp-12) var(--sp-16); margin-top: var(--sp-16); }
+/* (11/2 사용자) 두 그림 + 각 글을 한 박스로 묶고 가운데로 — 박스 면은 페이지와 같은 크림(그림 바탕과 이어지게), 선으로만 구분.
+   두 칸 사이에 가는 세로선 */
+.compare {
+  position: relative;
+  padding: var(--sp-12) var(--sp-10);
+  border: 1px solid var(--c-line);
+  border-radius: var(--sp-4);
+}
+@media (min-width: 768px) {
+  .compare::before { content: ""; position: absolute; top: var(--sp-12); bottom: var(--sp-12); left: 50%; width: 1px; background: var(--c-line); }
+}
+.compare-item, .compare-item.is-muted { padding: 0; background: none; border: 0; border-radius: 0; }
+.compare-img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 4; object-fit: cover; margin-bottom: var(--sp-5); }
+.compare-head { margin-bottom: var(--sp-1); font-size: var(--fs-lg); }
+.compare-item p:not(.compare-head) { font-size: var(--fs-sm); line-height: 1.7; }
+@media (max-width: 767px) { .compare { --compare-w: 280px; grid-template-columns: minmax(0, var(--compare-w)); justify-content: center; gap: var(--sp-12); margin-top: var(--sp-10); padding: var(--sp-8) var(--sp-5); } }
+/* (11/2 사용자) 세로선 기준으로 박스를 반씩 똑같이 나누고, 각 반의 가운데에 그림 + 글을 정렬 */
+@media (min-width: 768px) {
+  .compare { grid-template-columns: 1fr 1fr; column-gap: 0; padding-left: 0; padding-right: 0; } /* 좌우 안쪽 여백 0 → 각 반 = 테두리~세로선, 그 가운데에 정렬 */
+  .compare-item { justify-self: center; width: min(100%, var(--compare-w)); }
+}
+.compare-item { text-align: center; }
+@media (max-width: 767px) { .compare-item { justify-self: center; width: min(100%, var(--compare-w)); } }
+/* (11/2 사용자) 01 문제 대상 안내: 박스 아래 가운데, PC에서는 한 줄 (휴대폰은 화면보다 길어 자동 줄바꿈) */
+.note-center { max-width: none; text-align: center; }
+@media (min-width: 900px) { .note-center { white-space: nowrap; } }
+
+/* ── 02 해결 (11/2): 01 문제와 같은 테두리 박스. 해설 화면 이미지는 사용자 요청으로 삭제 → 세 줄만 가운데 */
+.solve { position: relative; display: grid; gap: var(--sp-10); margin-top: var(--sp-16); padding: var(--sp-12) var(--sp-5); border: 1px solid var(--c-line); border-radius: var(--sp-4); justify-items: center; }
+/* (11/2 사용자, 안 B) 실제 시연 화면 녹화(11.4초 반복). 목록은 영상 시간에 맞춰 지금 단계만 진하게 (js/solve.js) */
+.solve-video { width: min(100%, 240px); }
+.solve-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.solve-list li { transition: opacity 300ms var(--ease-move); }
+.solve.is-synced .solve-list li { opacity: 0.5; }
+.solve.is-synced .solve-list li.is-now { opacity: 1; }
+.solve-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-8); max-width: 360px; counter-reset: solve; }
+.solve-list li { counter-increment: solve; display: grid; grid-template-columns: 32px 1fr; column-gap: var(--sp-4); }
+.solve-list li::before { content: counter(solve); grid-row: span 2; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--c-accent); color: var(--c-on-accent); font-weight: 700; font-size: var(--fs-sm); }
+.solve-list h3 { font-size: var(--fs-lg); font-weight: 700; line-height: 32px; }
+.solve-list p { margin-top: var(--sp-1); font-size: var(--fs-sm); line-height: 1.7; }
+
+/* (11/2 사용자) DIVE를 2배로 키우고 왼쪽 해초에 살짝 걸치게 — 해초 앞 레이어(.scene-front)가 글자 위에 겹침 (PC만) */
+.scene-front { display: none; }
+@media (min-width: 900px) {
+  .scene-front { display: block; position: absolute; top: 0; left: 0; width: 100%; aspect-ratio: 1915 / 951; z-index: 2; pointer-events: none; }
+  .hero .hero-logo { font-size: clamp(176px, 19vw, 440px); margin-top: 0; }
+  .hero-copy { padding-top: calc(var(--top-h) + 6.3vw - 15px); } /* (11/2 사용자) 15px 위로 */
+  .hero-copy > .wrap { max-width: none; padding: 0; } /* 글자 위치를 본문 폭이 아니라 장면(화면 폭) 기준으로 */
+  .hero-text { margin-left: calc(8.4vw + 20px); } /* (11/2 사용자) +20px 오른쪽 */ /* D 왼쪽 아래가 해초 끝 뒤로 살짝 걸치게 (잠수함과는 겹치지 않게) — 모든 폭에서 같은 겹침 */
+}
+
+/* (11/2 사용자) 오른쪽 스크롤 막대 숨김 — 휠·터치·키보드 스크롤은 그대로 */
+html { scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
+
+/* (11/2 사용자) PC: 첫 화면이 창 높이를 딱 채우게 — 그림(비율 고정) 아래 남는 높이는 밝은 네이비 띠 */
+@media (min-width: 900px) {
+  .hero { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; }
+  .hero .scene { flex: none; }
+  .hero-band { flex: 1 1 auto; } /* 그림 아래 남는 높이를 띠가 채움 */
+}
+/* (11/2 사용자) 그림 영역 전체를 20px 위로 (DIVE 글자는 그대로) — 늘어난 아래 20px는 네이비 띠가 채움 */
+@media (min-width: 900px) {
+  .hero .scene { margin-top: -20px; }
+  .scene-front { top: -20px; }
+}
+
+/* (11/2 사용자) 네이비 띠 + 문구 "들리지 않아도, 그림 속까지." — Cafe24 PRO SLIM, 크림 글자, DIVE와 같은 왼쪽 선 */
+.hero-band { display: flex; align-items: center; min-height: 72px; padding: var(--sp-5) var(--gutter); background: var(--c-regal); }
+.hero-tagline { font-family: var(--font-title); font-weight: 700; font-size: clamp(22px, 2.4vw, 40px); line-height: 1.25; letter-spacing: var(--ls-title); color: var(--c-sea-cream); }
+@media (min-width: 900px) { .hero-band { padding: var(--sp-4) 0 var(--sp-4) calc(8.4vw + 20px); } }
+/* (11/2 사용자) 문구 더 작게 + PC에서 띠는 그림 아래부터 화면 끝까지 딱 맞게 (최소 높이·위아래 여백 없앰, 첫 화면 높이 = 창 높이) */
+.hero-tagline { font-size: clamp(14px, 1.3vw, 22px); }
+@media (min-width: 900px) {
+  .hero { height: 100vh; height: 100svh; min-height: 0; overflow: hidden; }
+  .hero-band { min-height: 0; padding-top: 0; padding-bottom: 0; }
+}
+/* (11/2) 창이 낮아 그림이 창보다 길어지면 띠가 사라짐 → 그림 높이를 '창 높이 − 56px'까지만, 넘치면 양옆을 조금 잘라 맞춤 */
+@media (min-width: 900px) {
+  .hero { --scene-h: min(calc(100vw * 951 / 1915), calc(100svh - 56px + 20px)); }
+  .hero .scene { aspect-ratio: auto; height: var(--scene-h); }
+  .scene-front { aspect-ratio: auto; height: var(--scene-h); }
+}
+
+/* (11/2 사용자) 메뉴바 맨 왼쪽 로고: DIVE의 D만 (Marcellus) — 바다 위 크림, 크림 영역에서는 네이비(메뉴 글자색 따라감) */
+.top-inner { justify-content: space-between; }
+.logo-d {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px;
+  font-family: "Marcellus", Georgia, serif; font-size: 34px; line-height: 1; color: var(--c-text); text-decoration: none;
+}
+/* (11/2 사용자) D 로고 왼쪽 = 첫 화면 아래 문구 왼쪽, 메뉴와 같은 가로선(글자 아래선 기준) */
+.top-inner { align-items: baseline; padding-top: 0; padding-bottom: 0; }
+.logo-d { justify-content: flex-start; min-width: 0; padding: 0; align-self: baseline; }
+.top-inner { height: var(--top-h); display: flex; align-items: center; padding-top: 0; } /* (11/2 사용자) 메뉴 글자의 세로 가운데 = D 글자의 세로 가운데 (아래 --menu-nudge로 글자 모양 차이 보정) */
+.menu { align-items: center; transform: translateY(var(--menu-nudge, 0px)); }
+@media (min-width: 900px) {
+  .top-inner { max-width: none; padding-left: calc(8.4vw + 20px); padding-right: max(var(--gutter), calc((100vw - var(--wrap)) / 2 + var(--gutter))); }
+}
+/* Marcellus는 글자 위쪽 여백이 커서 D가 위로 떠 보임 → D 글자를 메뉴바 세로 가운데로 내리고, 메뉴는 그 가운데에 맞춤 (픽셀로 잰 값) */
+.logo-d { transform: translateY(11px); }
+.top { --menu-nudge: 1px; }
+/* (11/2 사용자) 메뉴 D 로고 · 띠 문구의 왼쪽 = 첫 화면 DIVE의 D 글자 왼쪽 획 (눈에 보이는 글자 기준).
+   Marcellus D는 글자 왼쪽에 글자 크기의 약 7% 여백이 있어서, 큰 DIVE(19vw)는 상자보다 1.33vw 안쪽에서 글자가 시작됨
+   → 작은 D(34px, 여백 약 2.4px)와 문구(여백 약 1px)를 그 차이만큼 오른쪽으로 */
+@media (min-width: 900px) {
+  .top-inner { padding-left: calc(8.4vw + 20px + 1.33vw - 2.4px); }
+  .hero-band { padding-left: calc(8.4vw + 20px + 1.33vw - 1px); }
+}
+@media (max-width: 899px) {
+  .top-inner { padding-left: calc(var(--gutter) + 0.07 * clamp(72px, 11vw, 168px) - 2.4px); }
+  .hero-band { padding-left: calc(var(--gutter) + 0.07 * clamp(72px, 11vw, 168px) - 1px); }
+}
+
+/* 02 해결 (11/2 안 B): PC는 01 문제와 같은 반반 박스 — 왼쪽 = 시연 화면 녹화, 오른쪽 = 세 줄 */
+@media (min-width: 768px) {
+  .solve { grid-template-columns: 1fr 1fr; column-gap: 0; align-items: center; padding-left: 0; padding-right: 0; }
+  .solve::before { content: ""; position: absolute; top: var(--sp-12); bottom: var(--sp-12); left: 50%; width: 1px; background: var(--c-line); }
+  .solve-video { width: min(100%, 260px); }
+}

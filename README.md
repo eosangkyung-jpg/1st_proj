@@ -19,12 +19,25 @@
 2. [설치 명령어]
 3. [실행 명령어]
 
+### 서비스 소개 페이지 + 시연 (`site/`, 11/2)
+
+- 제출용 결과물. 소개 페이지(`site/index.html`) 안에서 B v2 해설을 직접 눌러 볼 수 있다 (`site/demo/`)
+- 로컬에서 보기
+  ```bash
+  cd site
+  python -m http.server 8002
+  # 브라우저: http://localhost:8002/
+  ```
+- 시연만 열기: `demo/?mode=demo` (작품: `&art=goldsmith` 또는 `&art=arnolfini`) / 발표 모드(화면을 창 높이에 꽉 차게): `demo/?mode=present`
+- 원본(`test-web/`, `ref_image/footer_loop/`, `records/` 캡처)을 고친 뒤 다시 복사: `python site/build_site.py` — 시연 복사본은 시트 주소를 비워 기록을 보내지 않는다
+- 배포: Cloudflare 대시보드 → Workers & Pages → 새 프로젝트에 `site/` 폴더를 끌어다 놓는다 (테스트 웹 `261102`와 다른 프로젝트)
+
 ### 사용성 테스트 웹
 
 테스트 웹은 저장소에 포함하지 않고, 별도 배포 주소로 공유한다.
 
 - 배포 주소 (11/2부터): https://261102.eosangkyung.workers.dev/ (Cloudflare Workers) — Netlify 무료 크레딧을 다 써서 옮김
-- 본 테스트 (11/2): `https://261102.eosangkyung.workers.dev/`
+- 본 테스트 (11/2): `https://261102.eosangkyung.workers.dev/` — 11/2 17:20 기록까지로 마감. 이후 기본 주소는 "본 테스트는 끝났어요" 안내만 보임 (진행자 확인용·미리보기·시연 주소는 그대로)
 - 진행자 확인용 (집계 제외): `https://261102.eosangkyung.workers.dev/?phase=test&group=A` 또는 `group=B`
 - 이전 배포 주소: https://261029.netlify.app/ (Netlify, 이전 버전이 남아 있음 — 참가자에게 보내지 않는다. 열면 같은 시트에 `phase=main` 기록이 섞인다)
 - 베타 (수강생용): `https://261029.netlify.app/?phase=beta` — 10/29 종료
@@ -56,6 +69,10 @@
 - 필요한 것: Python 3, pandas
   ```bash
   pip install pandas
+  ```
+- 본 테스트(11/2, A vs B v2) 분석 — 입력 `records/main_20261102_*.csv`, 그래프 `records/main_20261102_chart.png`도 만든다 (matplotlib 필요: `pip install matplotlib`)
+  ```bash
+  python analysis/analyze_main.py
   ```
 - 베타 테스트(10/29, A vs B v1) 분석
   ```bash
