@@ -95,9 +95,10 @@ PRODUCT.md       테스트 웹의 목적·사용자·제약
 
 ## 기록 파일
 
-검수를 마친 뒤 정리본을 공개할 예정이다.
+공개본은 [`docs/records/`](docs/records/)에 있다. 어디부터 볼지는 [목차](docs/records/README.md)에 정리했다.
 
-- AI 활용 기록: `records/AI_USAGE_LOG.md`
-- 사용성 테스트 기록: `records/USABILITY_TEST_LOG.csv`
-- 디자인 결정 기록: `records/DESIGN_DECISION_LOG.md`
-- 회고: `records/RETROSPECTIVE_NOTES.md`
+- AI 활용 기록: [`docs/records/AI_USAGE_LOG.md`](docs/records/AI_USAGE_LOG.md)
+- 사용성 테스트 기록: [`docs/records/USABILITY_TEST_LOG.csv`](docs/records/USABILITY_TEST_LOG.csv)
+- 디자인 결정 기록: [`docs/records/DESIGN_DECISION_LOG.md`](docs/records/DESIGN_DECISION_LOG.md)
+- 회고: [`docs/records/RETROSPECTIVE_NOTES.md`](docs/records/RETROSPECTIVE_NOTES.md)
+- 테스트 분석: [본 테스트](docs/records/MAIN_ANALYSIS_20261102.md) · [베타](docs/records/BETA_ANALYSIS_20261029.md)
