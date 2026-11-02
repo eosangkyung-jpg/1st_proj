@@ -30,6 +30,31 @@
 - 한계: 그룹당 6~9명이라 통계 검정 없이 경향으로만 말한다. 재참여자가 섞여 있고, 대부분 PC(마우스)로 참여해 실제 사용 상황(미술관·휴대폰)과 다르다
 - 10/29 베타 테스트(〈아르놀피니 부부의 초상〉)도 같은 방향이었다 (정답률 63% → 79%)
 
+## 안정성 — 막아 둔 상황
+
+본 테스트 버전(v2) 기준. 모든 안내는 소리 없이 글자와 화면으로만 전달한다. 화면 캡처는 [`docs/screenshots/03_states/`](docs/screenshots/03_states/).
+
+| 상황 | 화면에서 하는 일 |
+| --- | --- |
+| 그림을 불러오는 중 | 돌아가는 표시 + "그림을 불러오고 있어요…" |
+| 그림을 불러오지 못함 | "그림을 불러오지 못했어요. 인터넷 연결을 확인하고 다시 시도해 주세요." + [다시 시도] |
+| 잘못된 링크 (없는 작품·그룹 주소) | "잘못된 링크예요. 받은 링크를 다시 확인해 주세요." — 엉뚱한 화면으로 시작하지 않음 |
+| 결과 저장 중 | "창을 닫지 말아 주세요" 경고, 저장이 끝나면 "저장 완료"로 바뀜 |
+| 결과 저장 실패 | "저장하지 못했어요" + [다시 보내기] + [결과 파일 내려받기] — 기록을 잃지 않게 |
+| 문제당 1분 제한 | 남은 시간 표시, 마지막 10초 강조, 시간이 다 되면 "다음 문제로 넘어갈게요" 안내 후 자동으로 넘김 |
+| 같은 사람이 다시 참여 | "이미 참여하셨어요" — 한 사람당 한 번만 |
+| 끝난 테스트 링크 | "베타 테스트는 끝났어요" 안내만 보임 |
+| 작은 화면·긴 글 | 아이폰 17(402×874) 기준, 휴대폰은 화면에 맞추고 긴 문장은 줄바꿈 |
+| 개인정보 | 이름·연락처를 받지 않고 무작위 ID(`P` + 4글자)만 남김 |
+
+<p>
+<img src="docs/screenshots/03_states/v2_로딩_1102.webp" width="150" alt="로딩">
+<img src="docs/screenshots/03_states/v2_에러_그림불러오기실패_1102.webp" width="150" alt="그림 불러오기 실패">
+<img src="docs/screenshots/03_states/v2_에러_잘못된링크_1102.webp" width="150" alt="잘못된 링크">
+<img src="docs/screenshots/03_states/v2_에러_저장실패_1102.webp" width="150" alt="저장 실패">
+<img src="docs/screenshots/03_states/v2_시간초과_자동넘김_1102.webp" width="150" alt="시간 초과">
+</p>
+
 ## 실행 방법
 
 > 필요한 것: Git, Python 3 (로컬 서버용). 별도 설치 패키지는 없다.
@@ -102,6 +127,10 @@ PRODUCT.md       테스트 웹의 목적·사용자·제약
 - 디자인 결정 기록: [`docs/records/DESIGN_DECISION_LOG.md`](docs/records/DESIGN_DECISION_LOG.md)
 - 회고: [`docs/records/RETROSPECTIVE_NOTES.md`](docs/records/RETROSPECTIVE_NOTES.md)
 - 테스트 분석: [본 테스트](docs/records/MAIN_ANALYSIS_20261102.md) · [베타](docs/records/BETA_ANALYSIS_20261029.md)
+
+### 화면 캡처
+
+[`docs/screenshots/`](docs/screenshots/) — 개선 전(베타) · 개선 후(본 테스트) 전체 흐름, 안정성 화면, 대안 비교. 폴더별 설명은 [여기](docs/screenshots/README.md).
 
 ### 화면 보드
 
