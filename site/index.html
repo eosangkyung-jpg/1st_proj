@@ -43,7 +43,6 @@
     <nav class="menu" aria-label="주 메뉴">
       <a href="#about">서비스 소개</a>
       <a href="#demo">시연하러 가기</a>
-      <a href="#help">help&amp;support</a>
     </nav>
   </div>
 </header>
@@ -96,8 +95,7 @@
     </div>
     <!-- (11/2 사용자) 그림 아래 네이비 띠 + 문구 (Cafe24 PRO SLIM, 왼쪽 정렬) -->
     <div class="hero-band">
-      <p class="hero-tagline">들리지 않아도, 그림 속까지.</p>
-    </div>
+      <p class="hero-tagline">들리지 않아도, 그림 속까지.</p>    </div>
     <!-- (11/2 사용자) DIVE 글자를 왼쪽 해초 뒤에: 바다 그림에서 왼쪽 해초만 오린 앞 레이어를 글자 위에 겹침 (PC) -->
     <svg class="scene-front" id="scene-front" viewBox="0 0 1915 821" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
       <image href="footer/weed_front.webp" width="1915" height="821"/>
@@ -154,30 +152,31 @@
       <div class="demo-text">
         <p class="label">시연하러 가기</p>
         <h2 class="title" id="demo-title">직접 눌러 보세요</h2>
-        <p class="body">미술관에서 그림 옆 QR을 찍었다고 생각하고, [들어가기]를 누른 뒤 [다음]으로 넘겨 보세요. 테스트 질문이나 기록 없이 해설만 볼 수 있어요.</p>
+        <p class="body">미술관에서 그림 옆 QR을 찍었다고 생각하고, 그림을 누르고 [들어가기]를 누른 뒤 [다음]으로 넘겨 보세요. 테스트 질문이나 기록 없이 해설만 볼 수 있어요.</p>
         <div class="art-pick" role="group" aria-label="작품 고르기">
           <button type="button" class="chip" data-art="goldsmith" aria-pressed="true">작업실의 금세공인</button>
           <button type="button" class="chip" data-art="arnolfini" aria-pressed="false">아르놀피니 부부의 초상</button>
         </div>
         <div class="cta">
-          <a class="btn" id="demo-open" href="demo/?mode=demo&amp;art=goldsmith">전체 화면으로 열기</a>
-          <a class="text-link" id="demo-present" href="demo/?mode=present&amp;art=goldsmith">발표 모드</a>
+          <a class="btn" id="demo-open" href="demo/?mode=demo&amp;art=goldsmith" target="_blank" rel="noopener">전체 화면으로 열기</a>
         </div>
-        <p class="note">PC에서는 그림 위에 커서를 올리면, 휴대폰에서는 그림을 꾹 누르면 확대해서 볼 수 있어요 (장면 1).</p>
       </div>
       <div class="device" aria-label="DIVE 시연 화면">
         <div class="device-frame">
           <iframe id="demo-frame" title="DIVE 시연 — 작업실의 금세공인" src="demo/?mode=demo&amp;sim=bar&amp;art=goldsmith" loading="lazy"></iframe>
+          <!-- (11/3) 디폴트 화면 앞: 작품별 청색 판화(AI 생성 이미지)가 이동 반복. 누르면 시연 디폴트 화면(작품명·[들어가기]) -->
+          <button type="button" class="demo-poster" id="demo-poster" aria-label="그림 속으로 들어가기 — 작업실의 금세공인">
+            <img id="demo-poster-img" src="img/poster_goldsmith.webp" alt="" width="941" height="1672" loading="lazy">
+          </button>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── help&support ── -->
-  <section class="block" id="help" aria-labelledby="help-title">
+  <!-- ── 이렇게 써요: 시연하러 가기에 이어지는 순서 (11/3, help&support 이름·메뉴 삭제) ── -->
+  <section class="block how" id="how" aria-labelledby="how-title">
     <div class="wrap">
-      <p class="label">help&amp;support</p>
-      <h2 class="title" id="help-title">이렇게 써요</h2>
+      <h2 class="title" id="how-title">이렇게 써요</h2>
       <ol class="steps">
         <li><span class="step-n">1</span><div><h3>그림 옆 QR 찍기</h3><p>휴대폰 카메라로 작품 옆 QR을 찍으면 해설이 열려요. 앱을 설치하지 않아도 돼요.</p></div></li>
         <li><span class="step-n">2</span><div><h3>[들어가기]</h3><p>작품 이름과 그림 전체가 보이는 첫 화면에서 [들어가기]를 눌러요.</p></div></li>

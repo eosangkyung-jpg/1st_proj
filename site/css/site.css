@@ -47,6 +47,8 @@
   --t-fast: 200ms;
   /* [제품] 휴대폰 틀 (아이폰 17) */
   --phone-ratio: 402 / 874;
+  --phone-w: 402px;            /* (11/3) 시연 iframe은 항상 이 크기로 그리고 틀에 맞춰 통째로 줄임 */
+  --phone-h: 874px;
   --phone-r: 36px;             /* [소개 전용] 틀 모서리 */
 }
 @media (min-width: 768px) { :root { --gutter: var(--sp-10); } }
@@ -191,11 +193,55 @@ strong { font-weight: 700; color: var(--c-text); }
   box-shadow: 0 0 0 1px var(--c-line), 0 0 0 10px var(--c-frame-ring);
   background: var(--c-bg);
 }
-.device-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+/* (11/3) 시연은 402×874로 그린 뒤 틀 높이에 맞춰 통째로 줄임 — 글자도 같은 비율로 줄어 보드(402×874 캡처)와 비율이 같음.
+   이전: iframe을 틀 크기로 줄여 그림만 줄고 자막은 16px 그대로 → 창이 낮으면 자막이 상대적으로 커 보임 (--demo-scale은 site.js가 넣음) */
+.device-frame iframe {
+  display: block; width: var(--phone-w); height: var(--phone-h); border: 0;
+  transform: scale(var(--demo-scale, 1)); transform-origin: top left;
+}
+/* (11/3) 디폴트 화면 = 작품별 청색 판화가 이동 반복 (글자·버튼 없음, 누르면 장면 1)
+   움직임은 시연 디폴트 화면과 같게: 왼쪽 끝 → 오른쪽 끝 7초(묵직하게) → 1초 멈춤 → 0.5초 사라짐 → 0.5초 나타남 = 9초 */
+.device-frame { position: relative; }
+.demo-poster {
+  position: absolute; top: 0; left: 0;
+  width: var(--phone-w); height: var(--phone-h);
+  transform: scale(var(--demo-scale, 1)); transform-origin: top left;
+  padding: 0; border: 0; overflow: hidden; cursor: pointer;
+  background: var(--c-bg);
+}
+.demo-poster[hidden] { display: none; }
+.demo-poster img {
+  display: block; width: auto; max-width: none;
+  height: calc(var(--phone-h) * var(--poster-zoom));
+  margin-top: calc(var(--phone-h) * (1 - var(--poster-zoom)) / 2); /* 위아래는 가운데 */
+  animation: poster-pan var(--poster-cycle) infinite;
+}
+.demo-poster:focus-visible { outline: 3px solid var(--c-accent); outline-offset: -3px; }
+:root {
+  --poster-cycle: 9s;
+  --poster-zoom: 1.3;      /* (11/3) 화면 높이에 맞춘 크기의 1.3배 (사용자 요청, 이전 1배) */
+  /* 이동 거리 = 판화 너비(941×1672 비율) − 틀 너비 → 1.3배일 때 약 −238px (1배일 때 −90px) */
+  /* (11/3) 판화 양쪽 가장자리의 크림 점 테두리(원본 약 35px → 1.3배 화면에서 약 24px)가 보이지 않게, 양쪽 끝에서 이만큼 안쪽에서 출발·멈춤 (사용자 요청) */
+  --poster-edge: 24px;
+  --poster-start-x: calc(var(--poster-edge) * -1);
+  --poster-pan-x: calc(var(--phone-w) - var(--phone-h) * var(--poster-zoom) * 941 / 1672 + var(--poster-edge));
+}
+@keyframes poster-pan {
+  0%      { transform: translateX(var(--poster-start-x)); opacity: 1; animation-timing-function: var(--ease-move); }
+  77.78%  { transform: translateX(var(--poster-pan-x)); opacity: 1; animation-timing-function: linear; }
+  88.89%  { transform: translateX(var(--poster-pan-x)); opacity: 1; animation-timing-function: linear; }
+  94.44%  { transform: translateX(var(--poster-pan-x)); opacity: 0; }
+  94.45%  { transform: translateX(var(--poster-start-x)); opacity: 0; animation-timing-function: linear; }
+  100%    { transform: translateX(var(--poster-start-x)); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo-poster img { animation: none; transform: translateX(calc((var(--poster-start-x) + var(--poster-pan-x)) / 2)); } /* 가운데에 멈춘 화면 */
+}
 /* 휴대폰: 틀 대신 [전체 화면으로 열기]만 (화면 안에 또 휴대폰 화면은 너무 작음) */
 @media (max-width: 899px) { .device { display: none; } }
 
-/* ── help&support ── */
+/* ── 이렇게 써요 (11/3: help&support 삭제, 시연하러 가기에 이어지는 순서 — 구분선 없이 시연 바로 아래) ── */
+.block.how { border-top: 0; padding-top: var(--sp-8); }
 .steps { list-style: none; padding: 0; margin-top: var(--sp-12); display: grid; gap: var(--sp-6); }
 @media (min-width: 768px) { .steps { grid-template-columns: repeat(3, 1fr); gap: var(--sp-8); } }
 .steps li { display: flex; gap: var(--sp-4); }

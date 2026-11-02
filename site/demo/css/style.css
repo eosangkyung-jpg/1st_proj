@@ -28,6 +28,7 @@
   --c-border: var(--c-line);          /* [테스트 전용] 선: 보기·카드·입력칸 테두리, 진행 막대·로딩 원 바탕, PC 틀, 마우스 올림 고리. 바탕 5.2:1·면 4.4:1 */
   --c-scrim: rgba(0, 0, 0, 0.85); /* [테스트 전용] 확대 연습·찾기 과업의 알림 바탕 */
   --c-outside: var(--c-bg);    /* [테스트] PC에서 화면 바깥 — 화면 틀은 선으로 구분 */
+  --c-outside-present: var(--c-primary); /* [제품] 발표 모드(소개 페이지 [전체 화면으로 열기] 새 창) 화면 바깥: 크림 — 어두운 시연 화면과 대비 (11/3 사용자 요청, 이전: 검정) */
   --c-text-sub: var(--c-text); /* [테스트] 보조 글자: 색 대신 크기·굵기로 구분 (10/31, 이전 #B9C2D8) */
   --c-success: var(--c-primary); /* [테스트] 성공: 크림 (10/31, 이전 초록 #7DD69A) — 테스트 웹에서는 흰 글자와 1.13:1이라 글자로 쓰지 않음 */
   --c-accent: #FFD23F;         /* [테스트 전용] 노랑: 키보드 초점 표시, 진행자 확인용 배지 (10/31 제품에서 뺌) */
@@ -1056,6 +1057,7 @@ p, li { word-break: keep-all; overflow-wrap: anywhere; }
 
 /* ── [제품] 발표 모드 ?mode=present (11/2) — 402×874 화면을 그대로 두고 app.js가 zoom으로 창 높이에 맞춤.
    틀 테두리 없이 바깥은 바탕과 같은 검정 */
-.mode-present body { align-items: center; overflow: hidden; }
+.mode-present body { align-items: center; overflow: hidden; background: var(--c-outside-present); }
 .mode-present .app { width: calc(var(--frame-h) * var(--frame-ratio)); height: var(--frame-h); box-shadow: none; }
+.mode-demo .app { box-shadow: none; } /* (11/3) 시연(소개 페이지에서 새 창으로 엶)은 틀 테두리 없이 (사용자 요청) */
 .mode-present { --minimap-bar: var(--sim-safe-top); } /* (11/2) 화면이 402×874 그대로 확대되므로 위치 지도는 상태 표시줄 62 아래 */

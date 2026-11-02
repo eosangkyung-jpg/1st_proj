@@ -706,6 +706,11 @@
       showMessage(C.betaClosed);
       return;
     }
+    // (11/2 저녁) 본 테스트도 마감 (A 6·B 9 완료, 사용자 결정) — 기본 주소로 들어오면 안내만. 진행자 확인용 ?phase=test, 시연(?mode=demo·?preview)은 그대로
+    if (phase === 'main') {
+      showMessage(C.mainClosed);
+      return;
+    }
     if (phase !== 'test' && storage.get(DONE_KEY(phase), false)) {
       showMessage(C.alreadyDone);
       return;
@@ -1491,6 +1496,8 @@
   if (new URLSearchParams(location.search).get('sim') === 'iphone') document.documentElement.classList.add('sim-iphone');
   // (11/2) ?sim=bar: 꽉 채운 화면 그대로, 위치 지도만 상태 표시줄 아래로 (보드 캡처용, style.css .sim-bar)
   if (new URLSearchParams(location.search).get('sim') === 'bar') document.documentElement.classList.add('sim-bar');
+  // (11/3) ?mode=demo: 소개 페이지 [전체 화면으로 열기] — 틀 테두리(1px 선) 없이 (style.css .mode-demo)
+  if (new URLSearchParams(location.search).get('mode') === 'demo') document.documentElement.classList.add('mode-demo');
   // (11/2) ?mode=present: 발표 모드 — 402×874 화면을 창 높이에 꽉 차게 키움 (틀 테두리 없음, 바깥은 검정)
   if (new URLSearchParams(location.search).get('mode') === 'present') {
     document.documentElement.classList.add('mode-present');

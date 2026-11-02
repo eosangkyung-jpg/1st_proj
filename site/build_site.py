@@ -129,6 +129,15 @@ def og():
     canvas.resize((1200, 630), Image.LANCZOS).save(SITE / "img" / "og.jpg", quality=85, optimize=True)
 
 
+def posters():
+    """(11/3) 시연하러 가기 휴대폰 틀의 디폴트 화면: 작품별 청색 판화 (AI 생성 이미지, ref_image 원본 941×1672)"""
+    src = ROOT / "ref_image"
+    out = SITE / "img"
+    out.mkdir(parents=True, exist_ok=True)
+    for name, dst in [("중세 세 인물과 저울이 있는 장면.png", "poster_goldsmith.webp"), ("아르놀피니 초상의 청색 판화.png", "poster_arnolfini.webp")]:
+        Image.open(src / name).convert("RGB").save(out / dst, "WEBP", quality=72, method=6)
+
+
 if __name__ == "__main__":
     demo()
     footer()
@@ -136,6 +145,7 @@ if __name__ == "__main__":
     shots()
     weed_front()
     og()
+    posters()
     for f in sorted(SITE.rglob("*")):
         if f.is_file() and f.suffix in {".webp", ".jpg"}:
             print(f"{f.stat().st_size / 1024:8.0f} KB  {f.relative_to(SITE)}")

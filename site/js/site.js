@@ -29,17 +29,56 @@
       const art = chip.dataset.art;
       document.querySelectorAll('.chip[data-art]').forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
       $('demo-open').href = `demo/?mode=demo&art=${art}`;
-      $('demo-present').href = `demo/?mode=present&art=${art}`;
       const frame = $('demo-frame');
       frame.title = `DIVE 시연 — ${ART_NAMES[art]}`;
       frame.src = `demo/?mode=demo&sim=bar&art=${art}`; // (11/2) sim=bar: 휴대폰 틀 안에서도 위치 지도를 상태 표시줄 자리 아래로
+      // (11/3) 작품을 바꾸면 그 작품의 판화 디폴트 화면부터
+      $('demo-poster-img').src = `img/poster_${art}.webp`;
+      $('demo-poster').setAttribute('aria-label', `그림 속으로 들어가기 — ${ART_NAMES[art]}`);
+      $('demo-poster').hidden = false;
+      // 이동 반복을 처음(왼쪽 끝)부터 다시 시작 — 같은 작품을 다시 눌러도
+      const img = $('demo-poster-img');
+      img.style.animation = 'none';
+      void img.offsetWidth; // 애니메이션을 끊었다가 다시 붙이게 함
+      img.style.animation = '';
     });
   });
 
+  // ── 시연: 판화 디폴트 화면 (11/3) ─────────────────────────
+  // 판화를 누르면 → 판화만 숨겨 시연 디폴트 화면(작품명·[들어가기])이 나옴 (11/3 사용자 요청, 이전: 바로 장면 1로).
+  // 판화는 작품을 바꿀 때만 다시 나옴 (시연 안에서 [이전]으로 디폴트 화면에 돌아와도 판화는 다시 덮지 않음)
+  const poster = $('demo-poster');
+  poster.addEventListener('click', () => {
+    poster.hidden = true;
+    $('demo-frame').focus();
+  });
+
+  // ── 시연: [전체 화면으로 열기]는 새 탭으로 (11/3, 사용자 결정 — 새 창 대신) ──
+  // PC: 새 탭에 발표 모드(?mode=present, 402×874 화면을 탭 높이에 꽉 차게, 바깥 크림). 브라우저가 F11 전체 화면이면 그대로 전체 화면으로 보임
+  // 휴대폰(좁은 화면): a의 href 그대로 새 탭(?mode=demo, 화면에 맞춤)
+  $('demo-open').addEventListener('click', (e) => {
+    if (matchMedia('(max-width: 899px)').matches) return;
+    e.preventDefault();
+    window.open(e.currentTarget.href.replace('mode=demo', 'mode=present'), '_blank', 'noopener');
+  });
+
+  // ── 시연: 402×874 화면을 틀 높이에 맞춰 통째로 줄임 (11/3) ──
+  const deviceFrame = document.querySelector('.device-frame');
+  if (deviceFrame) {
+    const fitDemo = () => {
+      const h = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--phone-h')) || 874;
+      if (deviceFrame.clientHeight) deviceFrame.style.setProperty('--demo-scale', String(deviceFrame.clientHeight / h));
+    };
+    fitDemo();
+    if ('ResizeObserver' in window) new ResizeObserver(fitDemo).observe(deviceFrame);
+    else addEventListener('resize', fitDemo);
+  }
+
   // ── 메뉴: 지금 보는 곳 표시 ───────────────────────────────
-  // 메뉴 3개 = 서비스 소개(첫 화면~04) / 시연 / help — 화면 가운데에 걸친 섹션의 메뉴를 표시
+  // 메뉴 2개 = 서비스 소개(첫 화면~02) / 시연하러 가기(시연 + 이렇게 써요) — 화면 가운데에 걸친 섹션의 메뉴를 표시
+  // (11/3) help&support 메뉴 삭제, 이렇게 써요(#how)는 시연하러 가기에 이어지는 순서
   const links = [...document.querySelectorAll('.menu a')];
-  const groupOf = (el) => (el.id === 'demo' ? 1 : el.id === 'help' ? 2 : 0);
+  const groupOf = (el) => (el.id === 'demo' || el.id === 'how' ? 1 : 0);
   if ('IntersectionObserver' in window) {
     const io2 = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
