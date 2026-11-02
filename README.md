@@ -30,7 +30,11 @@
   ```
 - 시연만 열기: `demo/?mode=demo` (작품: `&art=goldsmith` 또는 `&art=arnolfini`) / 발표 모드(화면을 창 높이에 꽉 차게): `demo/?mode=present`
 - 원본(`test-web/`, `ref_image/footer_loop/`, `records/` 캡처)을 고친 뒤 다시 복사: `python site/build_site.py` — 시연 복사본은 시트 주소를 비워 기록을 보내지 않는다
-- 배포: Cloudflare 대시보드 → Workers & Pages → 새 프로젝트에 `site/` 폴더를 끌어다 놓는다 (테스트 웹 `261102`와 다른 프로젝트)
+- 배포 주소: https://dive.eosangkyung.workers.dev/ (Cloudflare 프로젝트 `dive`, 테스트 웹 `261102`와 다른 프로젝트)
+- 배포: `site/`에서 만들기 스크립트만 뺀 `deploy_site/`를 만들어 Cloudflare 대시보드 → Workers & Pages → `dive`에 끌어다 놓는다
+  ```bash
+  rm -rf deploy_site && cp -r site deploy_site && rm deploy_site/build_site.py
+  ```
 
 ### 사용성 테스트 웹
 

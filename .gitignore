@@ -20,6 +20,7 @@ test-web_beta_*.zip
 test-web_v*_*.zip
 backups/
 deploy/
+deploy_site/
 
 # 참고 이미지·작업 자료 (AI 생성 이미지, 푸터 시안 ref_image/footer_loop/ 포함 — 저장소에 올리지 않음, 11/2)
 ref_image/
