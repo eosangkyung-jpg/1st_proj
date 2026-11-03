@@ -123,6 +123,7 @@ PRODUCT.md       테스트 웹의 목적·사용자·제약
 공개본은 [`docs/records/`](docs/records/)에 있다. 어디부터 볼지는 [목차](docs/records/README.md)에 정리했다.
 
 - AI 활용 기록: [`docs/records/AI_USAGE_LOG.md`](docs/records/AI_USAGE_LOG.md)
+- 프롬프트 원문 (자동 저장): [`docs/records/PROMPT_HISTORY.md`](docs/records/PROMPT_HISTORY.md)
 - 사용성 테스트 기록: [`docs/records/USABILITY_TEST_LOG.csv`](docs/records/USABILITY_TEST_LOG.csv)
 - 디자인 결정 기록: [`docs/records/DESIGN_DECISION_LOG.md`](docs/records/DESIGN_DECISION_LOG.md)
 - 회고: [`docs/records/RETROSPECTIVE_NOTES.md`](docs/records/RETROSPECTIVE_NOTES.md)
